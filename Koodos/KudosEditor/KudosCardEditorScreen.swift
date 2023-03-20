@@ -147,8 +147,19 @@ class KudosEditorViewController: UIViewController {
         bottomToolbarView.addSubview(toggleColorsPalletesButton)
         view.addSubview(colorPalletesContainer)
         
+        setupColorPalletesContainer()
         setupKudosCard()
         setupConstraints()
+    }
+    
+    func setupColorPalletesContainer() {
+        for case let colorButton as UIButton in colorPalletesContainer.subviews {
+            colorButton.addTarget(
+                self,
+                action: #selector(colorOptionPressed(sender:)),
+                for: .touchUpInside
+            )
+        }
     }
     
     func setupKudosCard() {
@@ -163,7 +174,6 @@ class KudosEditorViewController: UIViewController {
             height: view.frame.width * 16/9
         )
         kudosCard.frame.size = cardSize
-        
     }
     
     func setupConstraints() {
@@ -254,7 +264,21 @@ extension KudosEditorViewController {
                 self.colorPalletesContainer.isHidden.toggle()
             }
         }
+    }
+    
+    @objc func colorOptionPressed(sender: UIButton) {
+        // Reset all color buttons stroke width
+        for case let colorButton as UIButton in colorPalletesContainer.subviews {
+            colorButton.configuration?.background.strokeWidth = 2
+        }
         
+        if let color = sender.backgroundColor {
+            UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) { [self] in
+                sender.configuration?.background.strokeWidth = 8
+                kudosCard.backgroundColor = color
+                toggleColorsPalletesButton.configuration?.baseBackgroundColor = color
+            }
+        }
     }
     
 }
