@@ -70,6 +70,68 @@ class KudosEditorViewController: UIViewController {
         return kudosCard
     }()
     
+    private var bottomToolbarView: UIView = {
+        let bottomToolbarView = UIView()
+        bottomToolbarView.translatesAutoresizingMaskIntoConstraints = false
+        bottomToolbarView.layer.zPosition = 1
+        
+        return bottomToolbarView
+    }()
+    
+    private var toggleColorsPalletesButton: UIButton = {
+        var config = UIButton.Configuration.borderedProminent()
+        config.background.strokeColor = .init(white: 0.95, alpha: 1)
+        config.background.strokeWidth = 2
+        config.baseBackgroundColor = .systemPink
+        config.cornerStyle = .capsule
+        
+        let button = UIButton(configuration: config)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        return button
+    }()
+    
+    private var colorPalletesContainer: UIView = {
+        let colors: [UIColor] = [
+            .white,
+            .orange,
+            .yellow,
+            .green,
+            .systemTeal,
+            .cyan,
+            .systemIndigo,
+            .systemPink,
+        ]
+
+        let frame = CGRect(x: 0, y: 0, width: 44, height: 416)
+        let colorPalletesContainer = UIView(frame: frame)
+        colorPalletesContainer.translatesAutoresizingMaskIntoConstraints = false
+        colorPalletesContainer.isHidden = true
+        
+        for (index, color) in colors.enumerated() {
+            var config = UIButton.Configuration.borderedProminent()
+            config.background.strokeColor = .init(white: 0.95, alpha: 1)
+            config.background.strokeWidth = 2
+            config.baseBackgroundColor = color
+            config.cornerStyle = .capsule
+            
+            let size = CGSize(width: 44, height: 44)
+            let origin = CGPoint(
+                x: 0,
+                y: 416
+            )
+            
+            let button = UIButton(configuration: config)
+            button.frame = .init(origin: origin, size: size)
+            button.backgroundColor = color
+            button.layer.cornerRadius = .infinity
+            
+            colorPalletesContainer.addSubview(button)
+        }
+        
+        return colorPalletesContainer
+    }()
+    
     // MARK: - Methods
     
     override func viewDidLoad() {
@@ -79,13 +141,22 @@ class KudosEditorViewController: UIViewController {
     }
     
     func setupSubviews() {
-        setupKudosCard()
+        view.addSubview(kudosCard)
+        view.addSubview(bottomToolbarView)
         
+        bottomToolbarView.addSubview(toggleColorsPalletesButton)
+        view.addSubview(colorPalletesContainer)
+        
+        setupKudosCard()
         setupConstraints()
     }
     
     func setupKudosCard() {
-        view.addSubview(kudosCard)
+        toggleColorsPalletesButton.addTarget(
+            self,
+            action: #selector(toggleColorsPalettesPressed),
+            for: .touchUpInside
+        )
         
         let cardSize = CGSize(
             width: view.frame.width,
@@ -96,6 +167,93 @@ class KudosEditorViewController: UIViewController {
     }
     
     func setupConstraints() {
+        NSLayoutConstraint.activate([
+            bottomToolbarView.heightAnchor.constraint(
+                equalToConstant: 44
+            ),
+            bottomToolbarView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor,
+                constant: 16
+            ),
+            bottomToolbarView.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                constant: -8
+            ),
+            bottomToolbarView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor,
+                constant: -16
+            ),
+            
+            toggleColorsPalletesButton.widthAnchor.constraint(
+                equalTo: toggleColorsPalletesButton.heightAnchor
+            ),
+            toggleColorsPalletesButton.topAnchor.constraint(
+                equalTo: bottomToolbarView.topAnchor
+            ),
+            toggleColorsPalletesButton.leadingAnchor.constraint(
+                equalTo: bottomToolbarView.leadingAnchor
+            ),
+            toggleColorsPalletesButton.bottomAnchor.constraint(
+                equalTo: bottomToolbarView.bottomAnchor
+            ),
+            
+            colorPalletesContainer.centerXAnchor.constraint(
+                equalTo: toggleColorsPalletesButton.centerXAnchor
+            ),
+            colorPalletesContainer.heightAnchor.constraint(
+                equalToConstant: 400
+            ),
+            colorPalletesContainer.widthAnchor.constraint(
+                equalTo: toggleColorsPalletesButton.widthAnchor
+            ),
+            colorPalletesContainer.bottomAnchor.constraint(
+                equalTo: bottomToolbarView.topAnchor,
+                constant: -16
+            ),
+        ])
+    }
+    
+}
+
+extension KudosEditorViewController {
+    
+    // MARK: Button Targets
+    
+    @objc func toggleColorsPalettesPressed(forceHide: Bool = false) {
+        
+        if colorPalletesContainer.isHidden && !forceHide {
+            colorPalletesContainer.isHidden.toggle()
+            
+            UIView.animate(
+                withDuration: 0.2,
+                delay: 0,
+                options:  .curveEaseOut
+            ) {
+                for case let (index, button as UIButton) in self.colorPalletesContainer.subviews.enumerated() {
+                    let origin = CGPoint(
+                        x: 0,
+                        y: index * 50
+                    )
+                    button.frame.origin = origin
+                }
+            }
+        } else {
+            UIView.animate(
+                withDuration: 0.2,
+                delay: 0,
+                options:  .curveEaseOut
+            ) {
+                for case let button as UIButton in self.colorPalletesContainer.subviews{
+                    let origin = CGPoint(
+                        x: 0,
+                        y: 416
+                    )
+                    button.frame.origin = origin
+                }
+            } completion: { _ in
+                self.colorPalletesContainer.isHidden.toggle()
+            }
+        }
         
     }
     
