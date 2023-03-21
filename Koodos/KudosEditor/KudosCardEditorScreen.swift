@@ -102,6 +102,8 @@ class KudosEditorViewController: UIViewController {
         
         let button = UIButton(configuration: config)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(systemName: "pencil"), for: .normal)
+        button.imageView?.layer.opacity = 0
         
         return button
     }()
@@ -158,7 +160,7 @@ class KudosEditorViewController: UIViewController {
         return button
     }()
     
-    @objc private var drawButton: UIButton = {
+    @objc private var activateDrawModeButton: UIButton = {
         var config = UIButton.Configuration.tinted()
         config.image = .init(systemName: "scribble")
         config.cornerStyle = .capsule
@@ -234,7 +236,7 @@ class KudosEditorViewController: UIViewController {
         kudosCard.addSubview(canvasView)
         view.addSubview(bottomToolbarView)
         view.addSubview(addImageButton)
-        view.addSubview(drawButton)
+        view.addSubview(activateDrawModeButton)
         view.addSubview(doneDrawingButton)
         
         bottomToolbarView.addSubview(toggleColorsPalletesButton)
@@ -268,9 +270,9 @@ class KudosEditorViewController: UIViewController {
     }
     
     func setupDrawButton() {
-        drawButton.addTarget(
+        activateDrawModeButton.addTarget(
             self,
-            action: #selector(drawModePressed),
+            action: #selector(activateDrawModePressed),
             for: .touchUpInside
         )
     }
@@ -369,16 +371,16 @@ class KudosEditorViewController: UIViewController {
                 equalTo: addImageButton.heightAnchor
             ),
 
-            drawButton.topAnchor.constraint(
+            activateDrawModeButton.topAnchor.constraint(
                 equalTo: bottomToolbarView.topAnchor
             ),
-            drawButton.leadingAnchor.constraint(
+            activateDrawModeButton.leadingAnchor.constraint(
                 equalTo: addImageButton.trailingAnchor, constant: 8
             ),
-            drawButton.bottomAnchor.constraint(
+            activateDrawModeButton.bottomAnchor.constraint(
                 equalTo: bottomToolbarView.bottomAnchor
             ),
-            drawButton.widthAnchor.constraint(
+            activateDrawModeButton.widthAnchor.constraint(
                 equalTo: addImageButton.heightAnchor
             ),
             
@@ -440,27 +442,36 @@ extension KudosEditorViewController {
         
         if let color = sender.backgroundColor {
             UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) { [self] in
+                if canvasView.isUserInteractionEnabled {
+                    let inkColor = PKInkingTool.convertColor(color, from: .light, to: .dark)
+                    canvasView.tool = PKInkingTool(.pen, color: inkColor, width: 2)
+                } else {
+                    kudosCard.backgroundColor = color
+                }
                 sender.configuration?.background.strokeWidth = 6
-                kudosCard.backgroundColor = color
                 toggleColorsPalletesButton.configuration?.baseBackgroundColor = color
+            } completion: { [self] _ in
+                toggleColorsPalettesPressed(forceHide: true)
             }
         }
     }
     
-    @objc func drawModePressed(_ sender: UIButton) {
+    @objc func activateDrawModePressed(_ sender: UIButton) {
         doneDrawingButton.isHidden = false
         
         UIView.animateKeyframes(withDuration: 0.25, delay: 0) {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1/2) { [self] in
+                toggleColorsPalletesButton.configuration?.image = UIImage(systemName: "pencil")
                 addImageButton.layer.opacity = 0
-                drawButton.layer.opacity = 0
+                activateDrawModeButton.layer.opacity = 0
             }
             UIView.addKeyframe(withRelativeStartTime: 1/2, relativeDuration: 1/2) { [self] in
                 doneDrawingButton.layer.opacity = 1
+                toggleColorsPalletesButton.imageView?.layer.opacity = 1
             }
         } completion: { [self] _ in
             addImageButton.isHidden = true
-            drawButton.isHidden = true
+            activateDrawModeButton.isHidden = true
             canvasView.isUserInteractionEnabled = true
         }
         
@@ -468,7 +479,7 @@ extension KudosEditorViewController {
     
     @objc func doneDrawingPressed(_ sender: UIButton) {
         addImageButton.isHidden = false
-        drawButton.isHidden = false
+        activateDrawModeButton.isHidden = false
         
         UIView.animateKeyframes(withDuration: 0.25, delay: 0) {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1/2) { [self] in
@@ -476,7 +487,8 @@ extension KudosEditorViewController {
             }
             UIView.addKeyframe(withRelativeStartTime: 1/2, relativeDuration: 1/2) { [self] in
                 addImageButton.layer.opacity = 1
-                drawButton.layer.opacity = 1
+                activateDrawModeButton.layer.opacity = 1
+                toggleColorsPalletesButton.imageView?.layer.opacity = 0
             }
         } completion: { [self] _ in
             doneDrawingButton.isHidden = true
@@ -701,4 +713,5 @@ extension KudosEditorViewController {
         keyboardAnimationDuration = duration
         keyboardAnimationCurve = animationCurve
     }
+    
 }
