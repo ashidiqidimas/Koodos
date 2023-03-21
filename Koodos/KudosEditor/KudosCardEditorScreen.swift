@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct KudosEditorScreen: View {
     var body: some View {
@@ -111,7 +112,7 @@ class KudosEditorViewController: UIViewController {
         for (index, color) in colors.enumerated() {
             var config = UIButton.Configuration.borderedProminent()
             config.background.strokeColor = .init(white: 0.95, alpha: 1)
-            config.background.strokeWidth = 2
+            config.background.strokeWidth = color == .systemPink ? 6 : 2
             config.baseBackgroundColor = color
             config.cornerStyle = .capsule
             
@@ -132,6 +133,20 @@ class KudosEditorViewController: UIViewController {
         return colorPalletesContainer
     }()
     
+    private var trashView: UIImageView = {
+        let image = UIImage(
+            systemName: "trash.circle.fill",
+            withConfiguration: UIImage.SymbolConfiguration(
+                paletteColors: [.red, .init(red: 255/255, green: 236/255, blue: 238/255, alpha: 1)]
+            )
+        )
+        let trashView = UIImageView(image: image)
+        trashView.translatesAutoresizingMaskIntoConstraints = false
+        trashView.isHidden = true
+        
+        return trashView
+    }()
+    
     // MARK: - Methods
     
     override func viewDidLoad() {
@@ -140,16 +155,59 @@ class KudosEditorViewController: UIViewController {
         setupSubviews()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillDisappear),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillAppear),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     func setupSubviews() {
         view.addSubview(kudosCard)
+        kudosCard.addSubview(trashView)
         view.addSubview(bottomToolbarView)
         
         bottomToolbarView.addSubview(toggleColorsPalletesButton)
         view.addSubview(colorPalletesContainer)
         
-        setupColorPalletesContainer()
         setupKudosCard()
+        setupColorPalletesContainer()
+        setupToggleColorsPalletesButton()
         setupConstraints()
+    }
+    
+    func setupKudosCard() {
+        let cardSize = CGSize(
+            width: view.frame.width,
+            height: view.frame.width * 16/9
+        )
+        kudosCard.frame.size = cardSize
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapOnCard))
+        kudosCard.addGestureRecognizer(tapGesture)
+    }
+    
+    func setupToggleColorsPalletesButton() {
+        toggleColorsPalletesButton.addTarget(
+            self,
+            action: #selector(toggleColorsPalettesPressed),
+            for: .touchUpInside
+        )
     }
     
     func setupColorPalletesContainer() {
@@ -162,22 +220,13 @@ class KudosEditorViewController: UIViewController {
         }
     }
     
-    func setupKudosCard() {
-        toggleColorsPalletesButton.addTarget(
-            self,
-            action: #selector(toggleColorsPalettesPressed),
-            for: .touchUpInside
-        )
-        
-        let cardSize = CGSize(
-            width: view.frame.width,
-            height: view.frame.width * 16/9
-        )
-        kudosCard.frame.size = cardSize
-    }
-    
     func setupConstraints() {
         NSLayoutConstraint.activate([
+            trashView.heightAnchor.constraint(equalToConstant: 64),
+            trashView.widthAnchor.constraint(equalToConstant: 64),
+            trashView.bottomAnchor.constraint(equalTo: kudosCard.bottomAnchor, constant: -8),
+            trashView.centerXAnchor.constraint(equalTo: kudosCard.centerXAnchor),
+            
             bottomToolbarView.heightAnchor.constraint(
                 equalToConstant: 44
             ),
@@ -225,10 +274,10 @@ class KudosEditorViewController: UIViewController {
     
 }
 
+// MARK: - Button Targets
+
 extension KudosEditorViewController {
-    
-    // MARK: Button Targets
-    
+        
     @objc func toggleColorsPalettesPressed(forceHide: Bool = false) {
         
         if colorPalletesContainer.isHidden && !forceHide {
@@ -274,11 +323,235 @@ extension KudosEditorViewController {
         
         if let color = sender.backgroundColor {
             UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) { [self] in
-                sender.configuration?.background.strokeWidth = 8
+                sender.configuration?.background.strokeWidth = 6
                 kudosCard.backgroundColor = color
                 toggleColorsPalletesButton.configuration?.baseBackgroundColor = color
             }
         }
     }
     
+}
+
+// MARK: - Gestures
+
+extension KudosEditorViewController {
+    
+    @objc private func tapOnCard(_ gesture: UITapGestureRecognizer) {
+        if isKeyboardShown {
+            view.endEditing(true)
+            return
+        }
+
+        let location = gesture.location(in: kudosCard)
+        
+        if kudosCard.frame.contains(location) {
+            addText(at: location)
+        }
+    }
+    
+    @objc private func userDragged(gesture: UIPanGestureRecognizer){
+        guard let gestureView = gesture.view else { return }
+        
+        let loc = gesture.location(in: kudosCard)
+        
+        if isKeyboardShown {
+            view.endEditing(true)
+        }
+        
+        if gesture.state == .began {
+            let locationInView = gesture.location(in: gestureView)
+            oldScale = gestureView.transform.scale
+            
+            dragStartLocation = locationInView
+            triggerHaptic()
+            trashView.isHidden = false
+        } else if gesture.state == .changed {
+            gestureView.frame.origin.x = loc.x - (dragStartLocation.x * gestureView.transform.scale)
+            gestureView.frame.origin.y = loc.y - (dragStartLocation.y * gestureView.transform.scale)
+            gestureView.transform = CGAffineTransform(scaleX: oldScale, y: oldScale)
+            gestureView.updateConstraints()
+       
+            if trashView.frame.contains(loc) {
+                if isFromOutsideTrashView {
+                    triggerHaptic()
+                    isFromOutsideTrashView = false
+                    
+                    UIView.animate(withDuration: 0.1) {
+                        self.trashView.transform = .init(scaleX: 1.25, y: 1.25)
+                    }
+                }
+                
+                gestureView.center = trashView.center
+                gestureView.transform = CGAffineTransformMakeScale(0.25, 0.25)
+            } else {
+                isFromOutsideTrashView = true
+                UIView.animate(withDuration: 0.1) { [self] in
+                    trashView.transform = .identity
+                    gestureView.transform = CGAffineTransform.init(scaleX: oldScale, y: oldScale)
+                }
+            }
+            
+        } else if gesture.state == .ended {
+            trashView.isHidden = true
+            
+            if trashView.frame.contains(loc) {
+                removeView(gestureView)
+            }
+        }
+    }
+    
+    @objc private func didPinch(_ gesture: UIPinchGestureRecognizer) {
+        guard let gestureView = gesture.view else { return }
+        
+        gestureView.transform = gestureView.transform.scaledBy(x: gesture.scale, y: gesture.scale)
+        gesture.scale = 1
+    }
+    
+}
+
+// MARK: - Handling Text
+
+extension KudosEditorViewController: UITextViewDelegate {
+    func addText(at location: CGPoint) {
+        isNewTextView = true
+        
+        let newTextView = UITextView(frame: .zero)
+        newTextView.isScrollEnabled = false
+        newTextView.textColor = .black
+        newTextView.font = .systemFont(ofSize: 24)
+        newTextView.center = location
+        newTextView.backgroundColor = .none
+        newTextView.layer.cornerRadius = 6
+        
+        newTextView.delegate = self
+        
+        let size = newTextView.sizeThatFits(
+            CGSize(
+                width: CGFloat.greatestFiniteMagnitude,
+                height: CGFloat.greatestFiniteMagnitude
+            )
+        )
+        
+        newTextView.frame.size = size
+        
+        let dragGesture = UIPanGestureRecognizer(target: self, action: #selector(userDragged(gesture:)))
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(didPinch))
+        
+        newTextView.addGestureRecognizer(dragGesture)
+        newTextView.addGestureRecognizer(pinchGesture)
+        newTextView.isUserInteractionEnabled = true
+
+        kudosCard.addSubview(newTextView)
+        
+        newTextView.becomeFirstResponder()
+    }
+    
+    // Move a textView to the top when is the first responder
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        triggerHaptic()
+        
+        oldScale = textView.transform.scale
+        oldLocation = textView.center
+        
+        UIView.animate(
+            withDuration: isNewTextView ? 0 : keyboardAnimationDuration ?? 0.9,
+            delay: 0,
+            options: UIView.AnimationOptions(rawValue: UInt(keyboardAnimationCurve ?? 0))
+        ) {
+            textView.center = .init(x: (self.view.window?.windowScene?.screen.bounds.width ?? 200)/2, y: 200)
+        }
+        
+        return true
+    }
+    
+    // Resize textView dynamically to its content
+    func textViewDidChange(_ textView: UITextView) {
+        resizeTextViewToFit(textView)
+    }
+    
+    // Return a textView to its previous location before
+    func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
+        guard textView.hasText else {
+            removeView(textView)
+            return true
+        }
+        
+        textView.text = removedTrailingSpace(string: textView.text)
+        resizeTextViewToFit(textView)
+        
+        if !isNewTextView {
+            UIView.animate(
+                withDuration: isNewTextView ? 0 : keyboardAnimationDuration ?? 0.9,
+                delay: 0,
+                options: UIView.AnimationOptions(rawValue: UInt(keyboardAnimationCurve ?? 0))
+            ) {
+                textView.center = self.oldLocation
+            }
+        }
+        
+        return true
+    }
+    
+    func removedTrailingSpace(string: String) -> String {
+        return string.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
+    func removeView(_ view: UIView) {
+        trashView.isHidden = true
+        triggerHaptic()
+        UIView.animate(withDuration: 0.15) {
+            view.alpha = 0
+        } completion: { _ in
+            view.removeFromSuperview()
+        }
+    }
+    
+    func resizeTextViewToFit(_ textView: UITextView) {
+        let oldCenter = textView.center
+        let newSize = textView.sizeThatFits(
+            CGSize(
+                width: CGFloat.greatestFiniteMagnitude,
+                height: CGFloat.greatestFiniteMagnitude
+            )
+        )
+        textView.frame.size = CGSize(
+            width: newSize.width * oldScale,
+            height: newSize.height * oldScale
+        )
+        textView.center = oldCenter
+    }
+    
+}
+
+// MARK: - Others
+
+extension KudosEditorViewController {
+    func triggerHaptic() {
+        let generator = UISelectionFeedbackGenerator()
+        generator.prepare()
+        generator.selectionChanged()
+    }
+    
+    @objc func keyboardWillAppear() {
+        isKeyboardShown = true
+        toggleColorsPalettesPressed(forceHide: true)
+    }
+
+    @objc func keyboardWillDisappear(notification: NSNotification) {
+        isKeyboardShown = false
+        isNewTextView = false
+        
+        let userInfo = notification.userInfo
+        let duration = userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double
+        let animationCurve = userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int
+        keyboardAnimationDuration = duration
+        keyboardAnimationCurve = animationCurve
+    }
+}
+
+// MARK: - Helpers Extensions
+extension CGAffineTransform {
+    var scale: CGFloat {
+        sqrt(Double(self.a * self.a + self.c * self.c))
+    }
 }
