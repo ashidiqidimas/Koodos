@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UIKit
+import PencilKit
 
 struct KudosEditorScreen: View {
     var body: some View {
@@ -60,6 +61,8 @@ class KudosEditorViewController: UIViewController {
     private var keyboardAnimationDuration: Double?
     private var keyboardAnimationCurve: Int?
     
+    //    private var drawingPoints: [Int: [CGFloat]] = [:]
+    
     // MARK: Views
     
     private var kudosCard: UIView = {
@@ -79,6 +82,17 @@ class KudosEditorViewController: UIViewController {
         return bottomToolbarView
     }()
     
+    private var canvasView: PKCanvasView = {
+        var canvas = PKCanvasView()
+        canvas.translatesAutoresizingMaskIntoConstraints = false
+        canvas.drawingPolicy = .anyInput
+        canvas.backgroundColor = .clear
+        canvas.isUserInteractionEnabled = false
+        let inkColor = PKInkingTool.convertColor(.white, from: .light, to: .dark)
+        canvas.tool = PKInkingTool(.pen, color: inkColor, width: 2)
+        return canvas
+    }()
+    
     private var toggleColorsPalletesButton: UIButton = {
         var config = UIButton.Configuration.borderedProminent()
         config.background.strokeColor = .init(white: 0.95, alpha: 1)
@@ -88,6 +102,8 @@ class KudosEditorViewController: UIViewController {
         
         let button = UIButton(configuration: config)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(systemName: "pencil"), for: .normal)
+        button.imageView?.layer.opacity = 0
         
         return button
     }()
@@ -103,7 +119,7 @@ class KudosEditorViewController: UIViewController {
             .systemIndigo,
             .systemPink,
         ]
-
+        
         let frame = CGRect(x: 0, y: 0, width: 44, height: 416)
         let colorPalletesContainer = UIView(frame: frame)
         colorPalletesContainer.translatesAutoresizingMaskIntoConstraints = false
@@ -133,6 +149,28 @@ class KudosEditorViewController: UIViewController {
         return colorPalletesContainer
     }()
     
+    private var addImageButton: UIButton = {
+        var config = UIButton.Configuration.tinted()
+        config.image = .init(systemName: "photo.fill")
+        config.cornerStyle = .capsule
+        
+        let button = UIButton(configuration: config)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        return button
+    }()
+    
+    @objc private var activateDrawModeButton: UIButton = {
+        var config = UIButton.Configuration.tinted()
+        config.image = .init(systemName: "scribble")
+        config.cornerStyle = .capsule
+        
+        let button = UIButton(configuration: config)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        return button
+    }()
+    
     private var trashView: UIImageView = {
         let image = UIImage(
             systemName: "trash.circle.fill",
@@ -145,6 +183,21 @@ class KudosEditorViewController: UIViewController {
         trashView.isHidden = true
         
         return trashView
+    }()
+    
+    private var doneDrawingButton: UIButton = {
+        var config = UIButton.Configuration.filled()
+        config.cornerStyle = .capsule
+        config.title = "Done"
+        config.baseBackgroundColor = .label
+        config.baseForegroundColor = .systemBackground
+        
+        let button = UIButton(configuration: config)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.layer.opacity = 0
+        button.isHidden = true
+        
+        return button
     }()
     
     // MARK: - Methods
@@ -180,7 +233,11 @@ class KudosEditorViewController: UIViewController {
     func setupSubviews() {
         view.addSubview(kudosCard)
         kudosCard.addSubview(trashView)
+        kudosCard.addSubview(canvasView)
         view.addSubview(bottomToolbarView)
+        view.addSubview(addImageButton)
+        view.addSubview(activateDrawModeButton)
+        view.addSubview(doneDrawingButton)
         
         bottomToolbarView.addSubview(toggleColorsPalletesButton)
         view.addSubview(colorPalletesContainer)
@@ -188,6 +245,8 @@ class KudosEditorViewController: UIViewController {
         setupKudosCard()
         setupColorPalletesContainer()
         setupToggleColorsPalletesButton()
+        setupDrawButton()
+        setupDoneDrawingButton()
         setupConstraints()
     }
     
@@ -210,6 +269,22 @@ class KudosEditorViewController: UIViewController {
         )
     }
     
+    func setupDrawButton() {
+        activateDrawModeButton.addTarget(
+            self,
+            action: #selector(activateDrawModePressed),
+            for: .touchUpInside
+        )
+    }
+    
+    func setupDoneDrawingButton() {
+        doneDrawingButton.addTarget(
+            self,
+            action: #selector(doneDrawingPressed),
+            for: .touchUpInside
+        )
+    }
+    
     func setupColorPalletesContainer() {
         for case let colorButton as UIButton in colorPalletesContainer.subviews {
             colorButton.addTarget(
@@ -226,6 +301,19 @@ class KudosEditorViewController: UIViewController {
             trashView.widthAnchor.constraint(equalToConstant: 64),
             trashView.bottomAnchor.constraint(equalTo: kudosCard.bottomAnchor, constant: -8),
             trashView.centerXAnchor.constraint(equalTo: kudosCard.centerXAnchor),
+            
+            canvasView.topAnchor.constraint(
+                equalTo: kudosCard.topAnchor
+            ),
+            canvasView.leadingAnchor.constraint(
+                equalTo: kudosCard.leadingAnchor
+            ),
+            canvasView.bottomAnchor.constraint(
+                equalTo: kudosCard.bottomAnchor
+            ),
+            canvasView.trailingAnchor.constraint(
+                equalTo: kudosCard.trailingAnchor
+            ),
             
             bottomToolbarView.heightAnchor.constraint(
                 equalToConstant: 44
@@ -269,6 +357,37 @@ class KudosEditorViewController: UIViewController {
                 equalTo: bottomToolbarView.topAnchor,
                 constant: -16
             ),
+            
+            addImageButton.topAnchor.constraint(
+                equalTo: bottomToolbarView.topAnchor
+            ),
+            addImageButton.leadingAnchor.constraint(
+                equalTo: toggleColorsPalletesButton.trailingAnchor, constant: 8
+            ),
+            addImageButton.bottomAnchor.constraint(
+                equalTo: bottomToolbarView.bottomAnchor
+            ),
+            addImageButton.widthAnchor.constraint(
+                equalTo: addImageButton.heightAnchor
+            ),
+
+            activateDrawModeButton.topAnchor.constraint(
+                equalTo: bottomToolbarView.topAnchor
+            ),
+            activateDrawModeButton.leadingAnchor.constraint(
+                equalTo: addImageButton.trailingAnchor, constant: 8
+            ),
+            activateDrawModeButton.bottomAnchor.constraint(
+                equalTo: bottomToolbarView.bottomAnchor
+            ),
+            activateDrawModeButton.widthAnchor.constraint(
+                equalTo: addImageButton.heightAnchor
+            ),
+            
+            doneDrawingButton.topAnchor.constraint(equalTo: bottomToolbarView.topAnchor),
+            doneDrawingButton.bottomAnchor.constraint(equalTo: bottomToolbarView.bottomAnchor),
+            doneDrawingButton.trailingAnchor.constraint(equalTo: bottomToolbarView.trailingAnchor),
+            doneDrawingButton.widthAnchor.constraint(equalToConstant: 120)
         ])
     }
     
@@ -323,10 +442,57 @@ extension KudosEditorViewController {
         
         if let color = sender.backgroundColor {
             UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) { [self] in
+                if canvasView.isUserInteractionEnabled {
+                    let inkColor = PKInkingTool.convertColor(color, from: .light, to: .dark)
+                    canvasView.tool = PKInkingTool(.pen, color: inkColor, width: 2)
+                } else {
+                    kudosCard.backgroundColor = color
+                }
                 sender.configuration?.background.strokeWidth = 6
-                kudosCard.backgroundColor = color
                 toggleColorsPalletesButton.configuration?.baseBackgroundColor = color
+            } completion: { [self] _ in
+                toggleColorsPalettesPressed(forceHide: true)
             }
+        }
+    }
+    
+    @objc func activateDrawModePressed(_ sender: UIButton) {
+        doneDrawingButton.isHidden = false
+        
+        UIView.animateKeyframes(withDuration: 0.25, delay: 0) {
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1/2) { [self] in
+                toggleColorsPalletesButton.configuration?.image = UIImage(systemName: "pencil")
+                addImageButton.layer.opacity = 0
+                activateDrawModeButton.layer.opacity = 0
+            }
+            UIView.addKeyframe(withRelativeStartTime: 1/2, relativeDuration: 1/2) { [self] in
+                doneDrawingButton.layer.opacity = 1
+                toggleColorsPalletesButton.imageView?.layer.opacity = 1
+            }
+        } completion: { [self] _ in
+            addImageButton.isHidden = true
+            activateDrawModeButton.isHidden = true
+            canvasView.isUserInteractionEnabled = true
+        }
+        
+    }
+    
+    @objc func doneDrawingPressed(_ sender: UIButton) {
+        addImageButton.isHidden = false
+        activateDrawModeButton.isHidden = false
+        
+        UIView.animateKeyframes(withDuration: 0.25, delay: 0) {
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1/2) { [self] in
+                doneDrawingButton.layer.opacity = 0
+            }
+            UIView.addKeyframe(withRelativeStartTime: 1/2, relativeDuration: 1/2) { [self] in
+                addImageButton.layer.opacity = 1
+                activateDrawModeButton.layer.opacity = 1
+                toggleColorsPalletesButton.imageView?.layer.opacity = 0
+            }
+        } completion: { [self] _ in
+            doneDrawingButton.isHidden = true
+            canvasView.isUserInteractionEnabled = false
         }
     }
     
@@ -547,4 +713,5 @@ extension KudosEditorViewController {
         keyboardAnimationDuration = duration
         keyboardAnimationCurve = animationCurve
     }
+    
 }
