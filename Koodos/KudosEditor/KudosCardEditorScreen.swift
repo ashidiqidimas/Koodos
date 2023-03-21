@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-
 import UIKit
 
 struct KudosEditorScreen: View {
@@ -547,12 +546,5 @@ extension KudosEditorViewController {
         let animationCurve = userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int
         keyboardAnimationDuration = duration
         keyboardAnimationCurve = animationCurve
-    }
-}
-
-// MARK: - Helpers Extensions
-extension CGAffineTransform {
-    var scale: CGFloat {
-        sqrt(Double(self.a * self.a + self.c * self.c))
     }
 }

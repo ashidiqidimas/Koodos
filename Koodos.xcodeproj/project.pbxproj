@@ -12,6 +12,7 @@
 		1351697529C8A16900170969 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1351697429C8A16900170969 /* Assets.xcassets */; };
 		1351697829C8A16900170969 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1351697729C8A16900170969 /* Preview Assets.xcassets */; };
 		1351697F29C8A32B00170969 /* KudosCardEditorScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1351697E29C8A32B00170969 /* KudosCardEditorScreen.swift */; };
+		135FAD4129C973F3000368CB /* CGAffineTransform+scale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD4029C973F3000368CB /* CGAffineTransform+scale.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +22,7 @@
 		1351697429C8A16900170969 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1351697729C8A16900170969 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		1351697E29C8A32B00170969 /* KudosCardEditorScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KudosCardEditorScreen.swift; sourceTree = "<group>"; };
+		135FAD4029C973F3000368CB /* CGAffineTransform+scale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGAffineTransform+scale.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +58,7 @@
 				1351697029C8A16800170969 /* KoodosApp.swift */,
 				1351697229C8A16800170969 /* ContentView.swift */,
 				1351698029C8A34B00170969 /* KudosEditor */,
+				135FAD3F29C973CC000368CB /* Helpers */,
 				1351697429C8A16900170969 /* Assets.xcassets */,
 				1351697629C8A16900170969 /* Preview Content */,
 			);
@@ -76,6 +79,14 @@
 				1351697E29C8A32B00170969 /* KudosCardEditorScreen.swift */,
 			);
 			path = KudosEditor;
+			sourceTree = "<group>";
+		};
+		135FAD3F29C973CC000368CB /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				135FAD4029C973F3000368CB /* CGAffineTransform+scale.swift */,
+			);
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -150,6 +161,7 @@
 			files = (
 				1351697F29C8A32B00170969 /* KudosCardEditorScreen.swift in Sources */,
 				1351697329C8A16800170969 /* ContentView.swift in Sources */,
+				135FAD4129C973F3000368CB /* CGAffineTransform+scale.swift in Sources */,
 				1351697129C8A16800170969 /* KoodosApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
