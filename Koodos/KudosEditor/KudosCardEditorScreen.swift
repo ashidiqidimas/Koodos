@@ -172,6 +172,27 @@ class KudosEditorViewController: UIViewController {
         return button
     }()
     
+    private var cardEmojiButton: UIButton = {
+        let image = UIImage(named: "emoji-star")
+        
+        let imageButton = UIButton()
+        imageButton.translatesAutoresizingMaskIntoConstraints = false
+        imageButton.setImage(image, for: .normal)
+        
+        return imageButton
+    }()
+    
+    private var cardTitleButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("You Are\nAwesome!", for: .normal)
+        button.titleLabel?.font = UIFont.rounded(ofSize: 32, weight: .bold)
+        button.titleLabel?.lineBreakMode = .byWordWrapping
+        button.titleLabel?.textAlignment = .left
+        button.setTitleColor(CardColor.colors.first!.text, for: .normal)
+        return button
+    }()
+    
     private var trashView: UIImageView = {
         let image = UIImage(
             systemName: "trash.circle.fill",
@@ -236,6 +257,8 @@ class KudosEditorViewController: UIViewController {
         view.addSubview(kudosCard)
         kudosCard.addSubview(trashView)
         kudosCard.addSubview(canvasView)
+        kudosCard.addSubview(cardEmojiButton)
+        kudosCard.addSubview(cardTitleButton)
         view.addSubview(bottomToolbarView)
         view.addSubview(addImageButton)
         view.addSubview(activateDrawModeButton)
@@ -249,6 +272,7 @@ class KudosEditorViewController: UIViewController {
         setupToggleColorsPalletesButton()
         setupDrawButton()
         setupDoneDrawingButton()
+        setupCardTitleButton()
         setupConstraints()
     }
     
@@ -267,6 +291,14 @@ class KudosEditorViewController: UIViewController {
         toggleColorsPalletesButton.addTarget(
             self,
             action: #selector(toggleColorsPalettesPressed),
+            for: .touchUpInside
+        )
+    }
+    
+    func setupCardTitleButton() {
+        cardTitleButton.addTarget(
+            self,
+            action: #selector(cardTitlePressed),
             for: .touchUpInside
         )
     }
@@ -299,6 +331,34 @@ class KudosEditorViewController: UIViewController {
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
+            cardEmojiButton.topAnchor.constraint(
+                equalTo: kudosCard.topAnchor,
+                constant: 48
+            ),
+            cardEmojiButton.leadingAnchor.constraint(
+                equalTo: kudosCard.leadingAnchor,
+                constant: 32
+            ),
+            cardEmojiButton.widthAnchor.constraint(
+                equalToConstant: 100
+            ),
+            cardEmojiButton.heightAnchor.constraint(
+                equalTo: cardEmojiButton.widthAnchor
+            ),
+            
+            cardTitleButton.leadingAnchor.constraint(
+                equalTo: cardEmojiButton.trailingAnchor,
+                constant: 32
+            ),
+            cardTitleButton.centerYAnchor.constraint(
+                equalTo: cardEmojiButton.centerYAnchor
+            ),
+            cardTitleButton.trailingAnchor.constraint(
+                equalTo: kudosCard.trailingAnchor,
+                constant: -32
+            ),
+            cardTitleButton.heightAnchor.constraint(equalToConstant: 140),
+            
             trashView.heightAnchor.constraint(equalToConstant: 64),
             trashView.widthAnchor.constraint(equalToConstant: 64),
             trashView.bottomAnchor.constraint(equalTo: kudosCard.bottomAnchor, constant: -8),
@@ -524,6 +584,10 @@ extension KudosEditorViewController {
         } completion: { [self] _ in
             canvasView.isUserInteractionEnabled = false
         }
+    }
+    
+    @objc func cardTitlePressed(_ sender: UIButton) {
+        print("title pressed")
     }
     
 }
