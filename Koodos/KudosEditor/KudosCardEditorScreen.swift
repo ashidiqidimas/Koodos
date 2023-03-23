@@ -79,6 +79,7 @@ class KudosEditorViewController: UIViewController {
         let bottomToolbarView = UIView()
         bottomToolbarView.translatesAutoresizingMaskIntoConstraints = false
         bottomToolbarView.layer.zPosition = 1
+        bottomToolbarView.isHidden = true // TODO: delete
         
         return bottomToolbarView
     }()
@@ -160,6 +161,44 @@ class KudosEditorViewController: UIViewController {
         return button
     }()
     
+    private var emojiPicker: UIStackView = {
+        var stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.spacing = 8
+        
+        let imageStrings = [
+            "emoji-star-compact",
+            "emoji-love-compact",
+            "emoji-laughing-compact",
+            "emoji-100-compact",
+            "emoji-heart-compact"
+        ]
+
+        for imageString in imageStrings {
+            let image = UIImage(named: imageString)
+            
+            var config = UIButton.Configuration.filled()
+            config.image = image
+            config.cornerStyle = .medium
+            if imageString == imageStrings.first {
+                config.baseBackgroundColor = .backgroundSecondary
+            } else {
+                config.baseBackgroundColor = .clear
+            }
+            
+            let emojiButton = UIButton(configuration: config)
+            emojiButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+            emojiButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
+            
+            
+          
+            
+            stack.addArrangedSubview(emojiButton)
+        }
+        
+        return stack
+    }()
+    
     @objc private var activateDrawModeButton: UIButton = {
         var config = UIButton.Configuration.filled()
         config.image = .init(systemName: "scribble.variable")?.withTintColor(.textSecondary, renderingMode: .alwaysOriginal)
@@ -180,6 +219,13 @@ class KudosEditorViewController: UIViewController {
         imageButton.setImage(image, for: .normal)
         
         return imageButton
+    }()
+    
+    private var cardDivider: UIView = {
+        let divider = UIView()
+        divider.translatesAutoresizingMaskIntoConstraints = false
+        divider.backgroundColor = CardColor.colors.first!.divider
+        return divider
     }()
     
     private var cardTitleButton: UIButton = {
@@ -259,10 +305,12 @@ class KudosEditorViewController: UIViewController {
         kudosCard.addSubview(canvasView)
         kudosCard.addSubview(cardEmojiButton)
         kudosCard.addSubview(cardTitleButton)
+        kudosCard.addSubview(cardDivider)
         view.addSubview(bottomToolbarView)
-        view.addSubview(addImageButton)
-        view.addSubview(activateDrawModeButton)
-        view.addSubview(CTAButton)
+        bottomToolbarView.addSubview(addImageButton)
+        bottomToolbarView.addSubview(activateDrawModeButton)
+        bottomToolbarView.addSubview(CTAButton)
+        view.addSubview(emojiPicker)
         
         bottomToolbarView.addSubview(toggleColorsPalletesButton)
         view.addSubview(colorPalletesContainer)
@@ -357,7 +405,29 @@ class KudosEditorViewController: UIViewController {
                 equalTo: kudosCard.trailingAnchor,
                 constant: -32
             ),
-            cardTitleButton.heightAnchor.constraint(equalToConstant: 140),
+            cardTitleButton.heightAnchor.constraint(
+                equalToConstant: 140
+            ),
+            
+            cardDivider.topAnchor.constraint(
+                equalTo: cardEmojiButton.bottomAnchor,
+                constant: 24
+            ),
+            cardDivider.leadingAnchor.constraint(
+                equalTo: cardEmojiButton.leadingAnchor
+            ),
+            cardDivider.trailingAnchor.constraint(
+                equalTo: cardTitleButton.trailingAnchor
+            ),
+            cardDivider.heightAnchor.constraint(equalToConstant: 1.5),
+            
+            emojiPicker.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                constant: -8
+            ),
+            emojiPicker.centerXAnchor.constraint(
+                equalTo: view.centerXAnchor
+            ),
             
             trashView.heightAnchor.constraint(equalToConstant: 64),
             trashView.widthAnchor.constraint(equalToConstant: 64),
