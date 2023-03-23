@@ -61,6 +61,8 @@ class KudosEditorViewController: UIViewController {
     private var keyboardAnimationDuration: Double?
     private var keyboardAnimationCurve: Int?
     
+    private var currentCard = Card()
+    
     //    private var drawingPoints: [Int: [CGFloat]] = [:]
     
     // MARK: Views
@@ -69,7 +71,6 @@ class KudosEditorViewController: UIViewController {
         let kudosCard = UIView(frame: .zero)
         kudosCard.translatesAutoresizingMaskIntoConstraints = false
         kudosCard.layer.cornerRadius = 24
-        kudosCard.backgroundColor = CardColor.colors.first!.background
         kudosCard.clipsToBounds = true
         
         return kudosCard
@@ -224,7 +225,6 @@ class KudosEditorViewController: UIViewController {
     private var cardDivider: UIView = {
         let divider = UIView()
         divider.translatesAutoresizingMaskIntoConstraints = false
-        divider.backgroundColor = CardColor.colors.first!.divider
         return divider
     }()
     
@@ -235,7 +235,6 @@ class KudosEditorViewController: UIViewController {
         button.titleLabel?.font = UIFont.rounded(ofSize: 32, weight: .bold)
         button.titleLabel?.lineBreakMode = .byWordWrapping
         button.titleLabel?.textAlignment = .left
-        button.setTitleColor(CardColor.colors.first!.text, for: .normal)
         return button
     }()
     
@@ -325,14 +324,14 @@ class KudosEditorViewController: UIViewController {
     }
     
     func setupKudosCard() {
-//        let cardSize = CGSize(
-//            width: view.frame.width,
-//            height: view.frame.width * 16/9
-//        )
-//        kudosCard.frame.size = cardSize
-        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapOnCard))
         kudosCard.addGestureRecognizer(tapGesture)
+        
+        kudosCard.backgroundColor = currentCard.color.background
+        cardDivider.backgroundColor = currentCard.color.divider
+        cardTitleButton.setTitleColor(currentCard.color.text, for: .normal)
+        cardTitleButton.setTitle(currentCard.title, for: .normal)
+        cardEmojiButton.setImage(UIImage(named: currentCard.emoji), for: .normal)
     }
     
     func setupToggleColorsPalletesButton() {
