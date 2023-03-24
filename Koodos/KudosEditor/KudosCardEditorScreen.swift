@@ -574,7 +574,23 @@ extension KudosEditorViewController {
         
     @objc func toggleColorsPalettesPressed(forceHide: Bool = false) {
         
-        if colorPalletesContainer.isHidden && !forceHide {
+        if !colorPalletesContainer.isHidden || forceHide {
+            UIView.animate(
+                withDuration: 0.2,
+                delay: 0,
+                options:  .curveEaseOut
+            ) {
+                for case let button as UIButton in self.colorPalletesContainer.subviews{
+                    let origin = CGPoint(
+                        x: 0,
+                        y: 416
+                    )
+                    button.frame.origin = origin
+                }
+            } completion: { _ in
+                self.colorPalletesContainer.isHidden = true
+            }
+        } else {
             colorPalletesContainer.isHidden.toggle()
             
             UIView.animate(
@@ -590,22 +606,6 @@ extension KudosEditorViewController {
                     button.frame.origin = origin
                 }
             }
-        } else {
-            UIView.animate(
-                withDuration: 0.2,
-                delay: 0,
-                options:  .curveEaseOut
-            ) {
-                for case let button as UIButton in self.colorPalletesContainer.subviews{
-                    let origin = CGPoint(
-                        x: 0,
-                        y: 416
-                    )
-                    button.frame.origin = origin
-                }
-            } completion: { _ in
-                self.colorPalletesContainer.isHidden.toggle()
-            }
         }
     }
     
@@ -620,9 +620,8 @@ extension KudosEditorViewController {
             currentCard.color = cardColor!
             UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) { [self] in
                 if canvasView.isUserInteractionEnabled {
-                    let textColor = currentCard.color.text
-                    let inkColor = PKInkingTool.convertColor(textColor, from: .light, to: .dark)
-                    canvasView.tool = PKInkingTool(.pen, color: inkColor, width: 2)
+                    let textColor = currentCard.color.pen
+                    canvasView.tool = PKInkingTool(.pen, color: textColor, width: 2)
                     updateCard(updateBackground: false)
                 } else {
                     updateCard()
@@ -636,12 +635,7 @@ extension KudosEditorViewController {
     }
     
     @objc func activateDrawModePressed(_ sender: UIButton) {
-        let inkColor = PKInkingTool.convertColor(
-            currentCard.color.text,
-            from: .light,
-            to: .dark
-        )
-        canvasView.tool = PKInkingTool(.pen, color: inkColor, width: 3)
+        canvasView.tool = PKInkingTool(.pen, color: currentCard.color.pen, width: 3)
         UIView.animateKeyframes(withDuration: 0.25, delay: 0) {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1/2) { [self] in
                 toggleColorsPalletesButton.configuration?.image = UIImage(systemName: "pencil")
