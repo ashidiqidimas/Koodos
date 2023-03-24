@@ -41,6 +41,8 @@ class KudosEditorViewController: UIViewController {
     
     // MARK: - Properties
     
+    private var textViews: [UITextView] = []
+    
     /// Used to store the old location of an UILabel before become the first responder
     /// so we can animate it back to its original position when we has finished editing.
     private var oldLocation = CGPoint(x: 0, y: 0)
@@ -324,11 +326,35 @@ class KudosEditorViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapOnCard))
         kudosCard.addGestureRecognizer(tapGesture)
         
-        kudosCard.backgroundColor = currentCard.color.background
-        cardDivider.backgroundColor = currentCard.color.divider
+        updateCard()
+    }
+    
+    func updateCard(updateBackground: Bool = true) {
+        if updateBackground {
+            kudosCard.backgroundColor = currentCard.color.background
+            cardDivider.backgroundColor = currentCard.color.divider
+        }
         cardTitleButton.setTitleColor(currentCard.color.text, for: .normal)
         cardTitleButton.setTitle(currentCard.title, for: .normal)
         cardEmojiButton.setImage(UIImage(named: currentCard.emoji), for: .normal)
+        toggleColorsPalletesButton.configuration?.baseBackgroundColor = currentCard.color.background
+        
+        for case let colorButton as UIButton in colorPalletesContainer.subviews {
+            let isSelected = colorButton.backgroundColor == currentCard.color.background
+            colorButton.configuration?.background.strokeWidth = isSelected ? 6 : 2
+        }
+        
+        for case let emojiButton as UIButton in emojiPicker.arrangedSubviews {
+            if emojiButton.configuration?.image == UIImage(named: "\(currentCard.emoji)-compact") {
+                emojiButton.configuration?.baseBackgroundColor = .backgroundSecondary
+            } else {
+                emojiButton.configuration?.baseBackgroundColor = .clear
+            }
+        }
+        
+        for textView in textViews {
+            textView.textColor = currentCard.color.text
+        }
     }
     
     func setupToggleColorsPalletesButton() {
@@ -589,17 +615,20 @@ extension KudosEditorViewController {
             colorButton.configuration?.background.strokeWidth = 2
         }
         
-        if let color = sender.backgroundColor {
+        if let backgroundColor = sender.backgroundColor {
+            let cardColor = CardColor.colors.first(where: { $0.background == backgroundColor} )
+            currentCard.color = cardColor!
             UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) { [self] in
                 if canvasView.isUserInteractionEnabled {
-                    let cardColor = CardColor.colors.first(where: {$0.background == color})
-                    let inkColor = PKInkingTool.convertColor(cardColor!.text, from: .light, to: .dark)
+                    let textColor = currentCard.color.text
+                    let inkColor = PKInkingTool.convertColor(textColor, from: .light, to: .dark)
                     canvasView.tool = PKInkingTool(.pen, color: inkColor, width: 2)
+                    updateCard(updateBackground: false)
                 } else {
-                    kudosCard.backgroundColor = color
+                    updateCard()
                 }
                 sender.configuration?.background.strokeWidth = 6
-                toggleColorsPalletesButton.configuration?.baseBackgroundColor = color
+                toggleColorsPalletesButton.configuration?.baseBackgroundColor = backgroundColor
             } completion: { [self] _ in
                 toggleColorsPalettesPressed(forceHide: true)
             }
@@ -607,6 +636,12 @@ extension KudosEditorViewController {
     }
     
     @objc func activateDrawModePressed(_ sender: UIButton) {
+        let inkColor = PKInkingTool.convertColor(
+            currentCard.color.text,
+            from: .light,
+            to: .dark
+        )
+        canvasView.tool = PKInkingTool(.pen, color: inkColor, width: 3)
         UIView.animateKeyframes(withDuration: 0.25, delay: 0) {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1/2) { [self] in
                 toggleColorsPalletesButton.configuration?.image = UIImage(systemName: "pencil")
@@ -714,6 +749,13 @@ extension KudosEditorViewController {
                 CTAButton.configuration?.image = UIImage(systemName: "paperplane.fill")?.withTintColor(.white, renderingMode: .alwaysOriginal)
                 CTAButton.configuration?.baseBackgroundColor = .textPrimary
                 CTAButton.configuration?.baseForegroundColor = .white
+                
+                let cardColor = CardColor.colors.first {
+                    $0.background == kudosCard.backgroundColor
+                }
+                currentCard.color = cardColor!
+                
+                updateCard(updateBackground: false)
             }
         } completion: { [self] _ in
             canvasView.isUserInteractionEnabled = false
@@ -811,7 +853,7 @@ extension KudosEditorViewController: UITextViewDelegate {
         
         let newTextView = UITextView(frame: .zero)
         newTextView.isScrollEnabled = false
-        newTextView.textColor = .black
+        newTextView.textColor = currentCard.color.text
         newTextView.font = .systemFont(ofSize: 24)
         newTextView.center = location
         newTextView.backgroundColor = .none
@@ -836,6 +878,7 @@ extension KudosEditorViewController: UITextViewDelegate {
         newTextView.isUserInteractionEnabled = true
 
         kudosCard.addSubview(newTextView)
+        textViews.append(newTextView)
         
         newTextView.becomeFirstResponder()
     }
@@ -896,6 +939,7 @@ extension KudosEditorViewController: UITextViewDelegate {
         UIView.animate(withDuration: 0.15) {
             view.alpha = 0
         } completion: { _ in
+            self.textViews.removeAll(where: {$0 == view})
             view.removeFromSuperview()
         }
     }
