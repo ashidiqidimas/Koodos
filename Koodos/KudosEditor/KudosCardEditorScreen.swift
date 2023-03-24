@@ -717,6 +717,8 @@ extension KudosEditorViewController {
     @objc func CTAButtonPressed(_ sender: UIButton) {
         if sender.configuration?.title == "Done" {
             doneDrawing()
+        } else {
+            shareImagePressed()
         }
     }
     
@@ -726,6 +728,11 @@ extension KudosEditorViewController {
         } else {
             hideEmojiPicker()
         }
+    }
+    
+    @objc func shareImagePressed() {
+        let image = RenderImage.renderImage(in: kudosCard)
+        print(image.pngData()?.count) // TODO: Delete
     }
     
     @objc private func randomizedCardPressed(_ sender: UIButton) {
