@@ -80,7 +80,6 @@ class KudosEditorViewController: UIViewController {
         let bottomToolbarView = UIView()
         bottomToolbarView.translatesAutoresizingMaskIntoConstraints = false
         bottomToolbarView.layer.zPosition = 1
-        bottomToolbarView.isHidden = true // TODO: delete
         
         return bottomToolbarView
     }()
@@ -167,13 +166,7 @@ class KudosEditorViewController: UIViewController {
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.spacing = 8
         
-        let imageStrings = [
-            "emoji-star-compact",
-            "emoji-love-compact",
-            "emoji-laughing-compact",
-            "emoji-100-compact",
-            "emoji-heart-compact"
-        ]
+        let imageStrings = Card.emojis.map { "\($0)-compact" }
 
         for imageString in imageStrings {
             let image = UIImage(named: imageString)
@@ -191,11 +184,14 @@ class KudosEditorViewController: UIViewController {
             emojiButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
             emojiButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
             
-            
-          
-            
             stack.addArrangedSubview(emojiButton)
         }
+        
+        stack.transform = .init(
+            translationX: 0,
+            y: 100
+        )
+        stack.isHidden = true
         
         return stack
     }()
@@ -320,6 +316,7 @@ class KudosEditorViewController: UIViewController {
         setupDrawButton()
         setupDoneDrawingButton()
         setupCardTitleButton()
+        setupCardEmojiButton()
         setupConstraints()
     }
     
@@ -338,6 +335,14 @@ class KudosEditorViewController: UIViewController {
         toggleColorsPalletesButton.addTarget(
             self,
             action: #selector(toggleColorsPalettesPressed),
+            for: .touchUpInside
+        )
+    }
+    
+    func setupCardEmojiButton() {
+        cardEmojiButton.addTarget(
+            self,
+            action: #selector(cardEmojiPressed),
             for: .touchUpInside
         )
     }
@@ -626,6 +631,66 @@ extension KudosEditorViewController {
     @objc func CTAButtonPressed(_ sender: UIButton) {
         if sender.configuration?.title == "Done" {
             doneDrawing()
+        }
+    }
+    
+    @objc func cardEmojiPressed(_ sender: UIButton) {
+        if emojiPicker.isHidden {
+            showEmojiPicker()
+        } else {
+            hideEmojiPicker()
+        }
+    }
+    
+    private func showEmojiPicker() {
+        emojiPicker.isHidden = false
+        UIView.animateKeyframes(
+            withDuration: 0.25,
+            delay: 0
+        ) {
+            UIView.addKeyframe(
+                withRelativeStartTime: 0,
+                relativeDuration: 1/2
+            ) { [self] in
+                bottomToolbarView.transform = .init(
+                    translationX: 0,
+                    y: 100
+                )
+            }
+            UIView.addKeyframe(
+                withRelativeStartTime: 1/2,
+                relativeDuration: 1/2
+            ) { [self] in
+                emojiPicker.transform = .identity
+            }
+        } completion: { _ in
+            self.bottomToolbarView.isHidden = true
+        }
+    }
+
+    private func hideEmojiPicker() {
+        bottomToolbarView.isHidden = false
+        UIView.animateKeyframes(
+            withDuration: 0.25,
+            delay: 0
+        ) {
+            UIView.addKeyframe(
+                withRelativeStartTime: 0,
+                relativeDuration: 1/2
+            ) { [self] in
+                emojiPicker.transform = .init(
+                    translationX: 0,
+                    y: 100
+                )
+            }
+            UIView.addKeyframe(
+                withRelativeStartTime: 1/2,
+                relativeDuration: 1/2
+            ) { [self] in
+                bottomToolbarView.transform = .identity
+            }
+        } completion: { _ in
+            self.emojiPicker.isHidden = true
         }
     }
     

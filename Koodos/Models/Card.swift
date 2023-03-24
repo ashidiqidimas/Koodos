@@ -12,7 +12,7 @@ struct Card {
     var title: String
     var color: CardColor
     
-    private let emojis = [
+    static let emojis = [
         "emoji-star",
         "emoji-love",
         "emoji-laughing",
@@ -33,13 +33,13 @@ struct Card {
     }
     
     init() {
-        self.emoji = emojis.randomElement()!
+        self.emoji = Card.emojis.randomElement()!
         self.title = titles.randomElement()!
         self.color = CardColor.colors.randomElement()!
     }
     
     func random() -> Card {
-        let randomEmoji = emojis.randomElement()!
+        let randomEmoji = Card.emojis.randomElement()!
         let randomTitle = titles.randomElement()!
         let randomColor = CardColor.colors.randomElement()!
         
