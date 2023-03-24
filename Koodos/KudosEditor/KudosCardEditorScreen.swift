@@ -198,6 +198,33 @@ class KudosEditorViewController: UIViewController {
         return stack
     }()
     
+    private var titlePicker: UIStackView = {
+        var stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.spacing = 20
+        
+        for title in Card.titles {
+            let button = UIButton()
+            button.setTitle(title, for: .normal)
+            button.titleLabel?.font = UIFont.rounded(ofSize: 12, weight: .bold)
+            button.titleLabel?.lineBreakMode = .byWordWrapping
+            button.titleLabel?.textAlignment = .left
+            button.setTitleColor(.textPrimary, for: .normal)
+            
+            button.heightAnchor.constraint(equalToConstant: 50).isActive = true
+            
+            stack.addArrangedSubview(button)
+        }
+        
+        stack.transform = .init(
+            translationX: 0,
+            y: 100
+        )
+        stack.isHidden = true
+        
+        return stack
+    }()
+    
     @objc private var activateDrawModeButton: UIButton = {
         var config = UIButton.Configuration.filled()
         config.image = .init(systemName: "scribble.variable")?.withTintColor(.textSecondary, renderingMode: .alwaysOriginal)
@@ -308,11 +335,13 @@ class KudosEditorViewController: UIViewController {
         bottomToolbarView.addSubview(activateDrawModeButton)
         bottomToolbarView.addSubview(CTAButton)
         view.addSubview(emojiPicker)
+        view.addSubview(titlePicker)
         
         bottomToolbarView.addSubview(toggleColorsPalletesButton)
         view.addSubview(colorPalletesContainer)
         
         setupKudosCard()
+        setupTitleOptions()
         setupColorPalletesContainer()
         setupToggleColorsPalletesButton()
         setupDrawButton()
@@ -467,6 +496,14 @@ class KudosEditorViewController: UIViewController {
                 constant: -8
             ),
             emojiPicker.centerXAnchor.constraint(
+                equalTo: view.centerXAnchor
+            ),
+
+            titlePicker.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                constant: -8
+            ),
+            titlePicker.centerXAnchor.constraint(
                 equalTo: view.centerXAnchor
             ),
             
@@ -702,6 +739,16 @@ extension KudosEditorViewController {
         }
     }
     
+    private func setupTitleOptions() {
+        for case let button as UIButton in titlePicker.arrangedSubviews {
+            button.addTarget(
+                self,
+                action: #selector(titleOptionPressed),
+                for: .touchUpInside
+            )
+        }
+    }
+    
     private func showEmojiPicker() {
         emojiPicker.isHidden = false
         UIView.animateKeyframes(
@@ -788,7 +835,71 @@ extension KudosEditorViewController {
     }
     
     @objc func cardTitlePressed(_ sender: UIButton) {
-        print("title pressed")
+        if titlePicker.isHidden {
+            showTitlePicker()
+        } else {
+            hideTitlePicker()
+        }
+    }
+    
+    @objc func titleOptionPressed(_ sender: UIButton) {
+        if let title = sender.title(for: .normal) {
+            currentCard.title = title
+            cardTitleButton.setTitle(title, for: .normal)
+            hideTitlePicker()
+        }
+    }
+    
+    func showTitlePicker() {
+        titlePicker.isHidden = false
+        UIView.animateKeyframes(
+            withDuration: 0.25,
+            delay: 0
+        ) {
+            UIView.addKeyframe(
+                withRelativeStartTime: 0,
+                relativeDuration: 1/2
+            ) { [self] in
+                bottomToolbarView.transform = .init(
+                    translationX: 0,
+                    y: 100
+                )
+            }
+            UIView.addKeyframe(
+                withRelativeStartTime: 1/2,
+                relativeDuration: 1/2
+            ) { [self] in
+                titlePicker.transform = .identity
+            }
+        } completion: { _ in
+            self.bottomToolbarView.isHidden = true
+        }
+    }
+    
+    func hideTitlePicker() {
+        bottomToolbarView.isHidden = false
+        UIView.animateKeyframes(
+            withDuration: 0.25,
+            delay: 0
+        ) {
+            UIView.addKeyframe(
+                withRelativeStartTime: 0,
+                relativeDuration: 1/2
+            ) { [self] in
+                titlePicker.transform = .init(
+                    translationX: 0,
+                    y: 100
+                )
+            }
+            UIView.addKeyframe(
+                withRelativeStartTime: 1/2,
+                relativeDuration: 1/2
+            ) { [self] in
+                bottomToolbarView.transform = .identity
+            }
+        } completion: { _ in
+            self.titlePicker.isHidden = true
+        }
     }
     
 }
