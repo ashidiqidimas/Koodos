@@ -26,7 +26,7 @@ struct Card {
         "You Are\nThe Best!"
     ]
     
-    private let compactTitles = Card.titles.map { "\($0)-compact" }
+    private let compactTitles = Card.emojis.map { "\($0)-compact" }
     
     private init(emoji: String, title: String, color: CardColor) {
         self.emoji = emoji
