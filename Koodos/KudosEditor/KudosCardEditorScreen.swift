@@ -148,9 +148,9 @@ class KudosEditorViewController: UIViewController {
         return colorPalletesContainer
     }()
     
-    private var addImageButton: UIButton = {
+    private var randomizedCardButton: UIButton = {
         var config = UIButton.Configuration.filled()
-        config.image = .init(systemName: "photo.fill")?.withTintColor(
+        config.image = .init(systemName: "dice.fill")?.withTintColor(
             .textSecondary,
             renderingMode: .alwaysOriginal
         )
@@ -331,7 +331,7 @@ class KudosEditorViewController: UIViewController {
         kudosCard.addSubview(cardTitleButton)
         kudosCard.addSubview(cardDivider)
         view.addSubview(bottomToolbarView)
-        bottomToolbarView.addSubview(addImageButton)
+        bottomToolbarView.addSubview(randomizedCardButton)
         bottomToolbarView.addSubview(activateDrawModeButton)
         bottomToolbarView.addSubview(CTAButton)
         view.addSubview(emojiPicker)
@@ -349,6 +349,7 @@ class KudosEditorViewController: UIViewController {
         setupCardTitleButton()
         setupCardEmojiButton()
         setupEmojiButton()
+        setupRandomizedCardPressed()
         setupConstraints()
     }
     
@@ -385,6 +386,14 @@ class KudosEditorViewController: UIViewController {
         for textView in textViews {
             textView.textColor = currentCard.color.text
         }
+    }
+    
+    func setupRandomizedCardPressed() {
+        randomizedCardButton.addTarget(
+            self,
+            action: #selector(randomizedCardPressed),
+            for: .touchUpInside
+        )
     }
     
     func setupToggleColorsPalletesButton() {
@@ -581,30 +590,30 @@ class KudosEditorViewController: UIViewController {
                 constant: -42
             ),
             
-            addImageButton.topAnchor.constraint(
+            randomizedCardButton.topAnchor.constraint(
                 equalTo: bottomToolbarView.topAnchor
             ),
-            addImageButton.leadingAnchor.constraint(
+            randomizedCardButton.leadingAnchor.constraint(
                 equalTo: toggleColorsPalletesButton.trailingAnchor, constant: 8
             ),
-            addImageButton.bottomAnchor.constraint(
+            randomizedCardButton.bottomAnchor.constraint(
                 equalTo: bottomToolbarView.bottomAnchor
             ),
-            addImageButton.widthAnchor.constraint(
-                equalTo: addImageButton.heightAnchor
+            randomizedCardButton.widthAnchor.constraint(
+                equalTo: randomizedCardButton.heightAnchor
             ),
 
             activateDrawModeButton.topAnchor.constraint(
                 equalTo: bottomToolbarView.topAnchor
             ),
             activateDrawModeButton.leadingAnchor.constraint(
-                equalTo: addImageButton.trailingAnchor, constant: 8
+                equalTo: randomizedCardButton.trailingAnchor, constant: 8
             ),
             activateDrawModeButton.bottomAnchor.constraint(
                 equalTo: bottomToolbarView.bottomAnchor
             ),
             activateDrawModeButton.widthAnchor.constraint(
-                equalTo: addImageButton.heightAnchor
+                equalTo: randomizedCardButton.heightAnchor
             ),
             
             CTAButton.topAnchor.constraint(equalTo: bottomToolbarView.topAnchor),
@@ -687,7 +696,7 @@ extension KudosEditorViewController {
         UIView.animateKeyframes(withDuration: 0.25, delay: 0) {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1/2) { [self] in
                 toggleColorsPalletesButton.configuration?.image = UIImage(systemName: "pencil")
-                addImageButton.layer.opacity = 0
+                randomizedCardButton.layer.opacity = 0
                 activateDrawModeButton.layer.opacity = 0
             }
             UIView.addKeyframe(withRelativeStartTime: 1/2, relativeDuration: 1/2) { [self] in
@@ -698,7 +707,7 @@ extension KudosEditorViewController {
                 CTAButton.configuration?.baseForegroundColor = .textSecondary
             }
         } completion: { [self] _ in
-            addImageButton.isHidden = true
+            randomizedCardButton.isHidden = true
             activateDrawModeButton.isHidden = true
             canvasView.isUserInteractionEnabled = true
         }
@@ -717,6 +726,11 @@ extension KudosEditorViewController {
         } else {
             hideEmojiPicker()
         }
+    }
+    
+    @objc private func randomizedCardPressed(_ sender: UIButton) {
+        currentCard = Card.random()
+        updateCard()
     }
     
     @objc func emojiPressed(_ sender: UIButton) {
@@ -802,7 +816,7 @@ extension KudosEditorViewController {
     }
     
     func doneDrawing() {
-        addImageButton.isHidden = false
+        randomizedCardButton.isHidden = false
         activateDrawModeButton.isHidden = false
         
         UIView.animateKeyframes(withDuration: 0.25, delay: 0) {
@@ -814,7 +828,7 @@ extension KudosEditorViewController {
                 CTAButton.configuration?.baseForegroundColor = .white
             }
             UIView.addKeyframe(withRelativeStartTime: 1/2, relativeDuration: 1/2) { [self] in
-                addImageButton.layer.opacity = 1
+                randomizedCardButton.layer.opacity = 1
                 activateDrawModeButton.layer.opacity = 1
                 toggleColorsPalletesButton.imageView?.layer.opacity = 0
                 CTAButton.configuration?.title = "Share"

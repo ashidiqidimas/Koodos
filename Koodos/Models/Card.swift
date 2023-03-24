@@ -40,7 +40,7 @@ struct Card {
         self.color = CardColor.colors.randomElement()!
     }
     
-    func random() -> Card {
+    static func random() -> Card {
         let randomEmoji = Card.emojis.randomElement()!
         let randomTitle = Card.titles.randomElement()!
         let randomColor = CardColor.colors.randomElement()!
