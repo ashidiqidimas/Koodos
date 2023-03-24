@@ -319,6 +319,7 @@ class KudosEditorViewController: UIViewController {
         setupDoneDrawingButton()
         setupCardTitleButton()
         setupCardEmojiButton()
+        setupEmojiButton()
         setupConstraints()
     }
     
@@ -379,6 +380,16 @@ class KudosEditorViewController: UIViewController {
             action: #selector(cardTitlePressed),
             for: .touchUpInside
         )
+    }
+    
+    func setupEmojiButton() {
+        for case let button as UIButton in emojiPicker.subviews{
+            button.addTarget(
+                self,
+                action: #selector(emojiPressed),
+                for: .touchUpInside
+            )
+        }
     }
     
     func setupDrawButton() {
@@ -668,6 +679,26 @@ extension KudosEditorViewController {
             showEmojiPicker()
         } else {
             hideEmojiPicker()
+        }
+    }
+    
+    @objc func emojiPressed(_ sender: UIButton) {
+        if let selectedImage = sender.imageView?.image {
+            for case let imageButton as UIButton in emojiPicker.subviews {
+                if selectedImage.isEqualToImage(imageButton.imageView!.image!) {
+                    imageButton.configuration?.baseBackgroundColor = .backgroundSecondary
+                } else {
+                    imageButton.configuration?.baseBackgroundColor = .clear
+                }
+            }
+            
+            if let imageString = selectedImage.assetName {
+                let imageStringNoCompact = imageString.dropLast(8)
+                let image = UIImage(named: String(imageStringNoCompact))
+                cardEmojiButton.setImage(image, for: .normal)
+                currentCard.emoji = String(imageStringNoCompact)
+                hideEmojiPicker()
+            }
         }
     }
     
