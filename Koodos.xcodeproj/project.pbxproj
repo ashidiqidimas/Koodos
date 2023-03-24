@@ -19,6 +19,7 @@
 		135FAD6A29CC9396000368CB /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6929CC9396000368CB /* Card.swift */; };
 		135FAD6C29CD720E000368CB /* UIImage+isEqualToImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6B29CD720E000368CB /* UIImage+isEqualToImage.swift */; };
 		135FAD6E29CD7643000368CB /* UIImage+assetName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6D29CD7643000368CB /* UIImage+assetName.swift */; };
+		135FAD7029CD9203000368CB /* RenderImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6F29CD9203000368CB /* RenderImage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 		135FAD6929CC9396000368CB /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		135FAD6B29CD720E000368CB /* UIImage+isEqualToImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+isEqualToImage.swift"; sourceTree = "<group>"; };
 		135FAD6D29CD7643000368CB /* UIImage+assetName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+assetName.swift"; sourceTree = "<group>"; };
+		135FAD6F29CD9203000368CB /* RenderImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderImage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +92,7 @@
 			isa = PBXGroup;
 			children = (
 				1351697E29C8A32B00170969 /* KudosCardEditorScreen.swift */,
+				135FAD6F29CD9203000368CB /* RenderImage.swift */,
 			);
 			path = KudosEditor;
 			sourceTree = "<group>";
@@ -185,6 +188,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				135FAD7029CD9203000368CB /* RenderImage.swift in Sources */,
 				135FAD6829CC5B6A000368CB /* UIFont+rounded.swift in Sources */,
 				1351697F29C8A32B00170969 /* KudosCardEditorScreen.swift in Sources */,
 				135FAD6629CC2D77000368CB /* UIColor+Colors.swift in Sources */,
