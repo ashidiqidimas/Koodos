@@ -17,6 +17,8 @@
 		135FAD6629CC2D77000368CB /* UIColor+Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6529CC2D77000368CB /* UIColor+Colors.swift */; };
 		135FAD6829CC5B6A000368CB /* UIFont+rounded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6729CC5B6A000368CB /* UIFont+rounded.swift */; };
 		135FAD6A29CC9396000368CB /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6929CC9396000368CB /* Card.swift */; };
+		135FAD6C29CD720E000368CB /* UIImage+isEqualToImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6B29CD720E000368CB /* UIImage+isEqualToImage.swift */; };
+		135FAD6E29CD7643000368CB /* UIImage+assetName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6D29CD7643000368CB /* UIImage+assetName.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +33,8 @@
 		135FAD6529CC2D77000368CB /* UIColor+Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Colors.swift"; sourceTree = "<group>"; };
 		135FAD6729CC5B6A000368CB /* UIFont+rounded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+rounded.swift"; sourceTree = "<group>"; };
 		135FAD6929CC9396000368CB /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
+		135FAD6B29CD720E000368CB /* UIImage+isEqualToImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+isEqualToImage.swift"; sourceTree = "<group>"; };
+		135FAD6D29CD7643000368CB /* UIImage+assetName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+assetName.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +100,8 @@
 				135FAD4029C973F3000368CB /* CGAffineTransform+scale.swift */,
 				135FAD6529CC2D77000368CB /* UIColor+Colors.swift */,
 				135FAD6729CC5B6A000368CB /* UIFont+rounded.swift */,
+				135FAD6B29CD720E000368CB /* UIImage+isEqualToImage.swift */,
+				135FAD6D29CD7643000368CB /* UIImage+assetName.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -183,8 +189,10 @@
 				1351697F29C8A32B00170969 /* KudosCardEditorScreen.swift in Sources */,
 				135FAD6629CC2D77000368CB /* UIColor+Colors.swift in Sources */,
 				1351697329C8A16800170969 /* ContentView.swift in Sources */,
+				135FAD6C29CD720E000368CB /* UIImage+isEqualToImage.swift in Sources */,
 				135FAD6429CC1A34000368CB /* CardColor.swift in Sources */,
 				135FAD4129C973F3000368CB /* CGAffineTransform+scale.swift in Sources */,
+				135FAD6E29CD7643000368CB /* UIImage+assetName.swift in Sources */,
 				1351697129C8A16800170969 /* KoodosApp.swift in Sources */,
 				135FAD6A29CC9396000368CB /* Card.swift in Sources */,
 			);

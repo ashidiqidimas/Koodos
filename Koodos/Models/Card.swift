@@ -20,11 +20,13 @@ struct Card {
         "emoji-heart"
     ]
     
-    private let titles = [
+    static let titles = [
         "You Are\nAwesome!",
         "Thank You!",
         "You Are\nThe Best!"
     ]
+    
+    private let compactTitles = Card.titles.map { "\($0)-compact" }
     
     private init(emoji: String, title: String, color: CardColor) {
         self.emoji = emoji
@@ -34,13 +36,13 @@ struct Card {
     
     init() {
         self.emoji = Card.emojis.randomElement()!
-        self.title = titles.randomElement()!
+        self.title = Card.titles.randomElement()!
         self.color = CardColor.colors.randomElement()!
     }
     
     func random() -> Card {
         let randomEmoji = Card.emojis.randomElement()!
-        let randomTitle = titles.randomElement()!
+        let randomTitle = Card.titles.randomElement()!
         let randomColor = CardColor.colors.randomElement()!
         
         return Card(emoji: randomEmoji, title: randomTitle, color: randomColor)
