@@ -13,6 +13,15 @@
 		1351697829C8A16900170969 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1351697729C8A16900170969 /* Preview Assets.xcassets */; };
 		1351697F29C8A32B00170969 /* KudosCardEditorScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1351697E29C8A32B00170969 /* KudosCardEditorScreen.swift */; };
 		135FAD4129C973F3000368CB /* CGAffineTransform+scale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD4029C973F3000368CB /* CGAffineTransform+scale.swift */; };
+		135FAD6429CC1A34000368CB /* CardColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6329CC1A34000368CB /* CardColor.swift */; };
+		135FAD6629CC2D77000368CB /* UIColor+Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6529CC2D77000368CB /* UIColor+Colors.swift */; };
+		135FAD6829CC5B6A000368CB /* UIFont+rounded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6729CC5B6A000368CB /* UIFont+rounded.swift */; };
+		135FAD6A29CC9396000368CB /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6929CC9396000368CB /* Card.swift */; };
+		135FAD6C29CD720E000368CB /* UIImage+isEqualToImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6B29CD720E000368CB /* UIImage+isEqualToImage.swift */; };
+		135FAD6E29CD7643000368CB /* UIImage+assetName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6D29CD7643000368CB /* UIImage+assetName.swift */; };
+		135FAD7029CD9203000368CB /* RenderImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6F29CD9203000368CB /* RenderImage.swift */; };
+		1399ADA129CF12630060D76C /* ARViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1399ADA029CF12630060D76C /* ARViewContainer.swift */; };
+		1399ADA329CF129C0060D76C /* MaterialContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1399ADA229CF129C0060D76C /* MaterialContainerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +32,15 @@
 		1351697729C8A16900170969 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		1351697E29C8A32B00170969 /* KudosCardEditorScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KudosCardEditorScreen.swift; sourceTree = "<group>"; };
 		135FAD4029C973F3000368CB /* CGAffineTransform+scale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGAffineTransform+scale.swift"; sourceTree = "<group>"; };
+		135FAD6329CC1A34000368CB /* CardColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardColor.swift; sourceTree = "<group>"; };
+		135FAD6529CC2D77000368CB /* UIColor+Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Colors.swift"; sourceTree = "<group>"; };
+		135FAD6729CC5B6A000368CB /* UIFont+rounded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+rounded.swift"; sourceTree = "<group>"; };
+		135FAD6929CC9396000368CB /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
+		135FAD6B29CD720E000368CB /* UIImage+isEqualToImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+isEqualToImage.swift"; sourceTree = "<group>"; };
+		135FAD6D29CD7643000368CB /* UIImage+assetName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+assetName.swift"; sourceTree = "<group>"; };
+		135FAD6F29CD9203000368CB /* RenderImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderImage.swift; sourceTree = "<group>"; };
+		1399ADA029CF12630060D76C /* ARViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewContainer.swift; sourceTree = "<group>"; };
+		1399ADA229CF129C0060D76C /* MaterialContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaterialContainerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +75,10 @@
 			children = (
 				1351697029C8A16800170969 /* KoodosApp.swift */,
 				1351697229C8A16800170969 /* ContentView.swift */,
+				1399ADA029CF12630060D76C /* ARViewContainer.swift */,
+				1399ADA229CF129C0060D76C /* MaterialContainerView.swift */,
 				1351698029C8A34B00170969 /* KudosEditor */,
+				135FAD6229CC1A1C000368CB /* Models */,
 				135FAD3F29C973CC000368CB /* Helpers */,
 				1351697429C8A16900170969 /* Assets.xcassets */,
 				1351697629C8A16900170969 /* Preview Content */,
@@ -77,6 +98,7 @@
 			isa = PBXGroup;
 			children = (
 				1351697E29C8A32B00170969 /* KudosCardEditorScreen.swift */,
+				135FAD6F29CD9203000368CB /* RenderImage.swift */,
 			);
 			path = KudosEditor;
 			sourceTree = "<group>";
@@ -85,8 +107,21 @@
 			isa = PBXGroup;
 			children = (
 				135FAD4029C973F3000368CB /* CGAffineTransform+scale.swift */,
+				135FAD6529CC2D77000368CB /* UIColor+Colors.swift */,
+				135FAD6729CC5B6A000368CB /* UIFont+rounded.swift */,
+				135FAD6B29CD720E000368CB /* UIImage+isEqualToImage.swift */,
+				135FAD6D29CD7643000368CB /* UIImage+assetName.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		135FAD6229CC1A1C000368CB /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				135FAD6329CC1A34000368CB /* CardColor.swift */,
+				135FAD6929CC9396000368CB /* Card.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -159,10 +194,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				135FAD7029CD9203000368CB /* RenderImage.swift in Sources */,
+				135FAD6829CC5B6A000368CB /* UIFont+rounded.swift in Sources */,
 				1351697F29C8A32B00170969 /* KudosCardEditorScreen.swift in Sources */,
+				135FAD6629CC2D77000368CB /* UIColor+Colors.swift in Sources */,
 				1351697329C8A16800170969 /* ContentView.swift in Sources */,
+				1399ADA129CF12630060D76C /* ARViewContainer.swift in Sources */,
+				135FAD6C29CD720E000368CB /* UIImage+isEqualToImage.swift in Sources */,
+				1399ADA329CF129C0060D76C /* MaterialContainerView.swift in Sources */,
+				135FAD6429CC1A34000368CB /* CardColor.swift in Sources */,
 				135FAD4129C973F3000368CB /* CGAffineTransform+scale.swift in Sources */,
+				135FAD6E29CD7643000368CB /* UIImage+assetName.swift in Sources */,
 				1351697129C8A16800170969 /* KoodosApp.swift in Sources */,
+				135FAD6A29CC9396000368CB /* Card.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

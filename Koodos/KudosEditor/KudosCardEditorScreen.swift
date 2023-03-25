@@ -7,11 +7,13 @@
 
 import SwiftUI
 import UIKit
+import PencilKit
 
 struct KudosEditorScreen: View {
     var body: some View {
         GeometryReader { geo in
             KudosEditorControllerRepresentable()
+                .preferredColorScheme(.light)
                 .ignoresSafeArea(.keyboard, edges: .bottom)
         }
     }
@@ -30,7 +32,6 @@ struct KudosEditorControllerRepresentable: UIViewControllerRepresentable {
 struct KudosEditorScreen_Previews: PreviewProvider {
     static var previews: some View {
         KudosEditorScreen()
-            .preferredColorScheme(.dark)
     }
 }
 
@@ -39,6 +40,8 @@ struct KudosEditorScreen_Previews: PreviewProvider {
 class KudosEditorViewController: UIViewController {
     
     // MARK: - Properties
+    
+    private var textViews: [UITextView] = []
     
     /// Used to store the old location of an UILabel before become the first responder
     /// so we can animate it back to its original position when we has finished editing.
@@ -60,12 +63,16 @@ class KudosEditorViewController: UIViewController {
     private var keyboardAnimationDuration: Double?
     private var keyboardAnimationCurve: Int?
     
+    private var currentCard = Card()
+    
+    //    private var drawingPoints: [Int: [CGFloat]] = [:]
+    
     // MARK: Views
     
     private var kudosCard: UIView = {
         let kudosCard = UIView(frame: .zero)
+        kudosCard.translatesAutoresizingMaskIntoConstraints = false
         kudosCard.layer.cornerRadius = 24
-        kudosCard.backgroundColor = .systemPink
         kudosCard.clipsToBounds = true
         
         return kudosCard
@@ -79,11 +86,75 @@ class KudosEditorViewController: UIViewController {
         return bottomToolbarView
     }()
     
+    private var canvasView: PKCanvasView = {
+        var canvas = PKCanvasView()
+        canvas.translatesAutoresizingMaskIntoConstraints = false
+        canvas.drawingPolicy = .anyInput
+        canvas.backgroundColor = .clear
+        canvas.isUserInteractionEnabled = false
+        let inkColor = PKInkingTool.convertColor(
+            CardColor.colors.first!.text,
+            from: .light,
+            to: .dark
+        )
+        canvas.tool = PKInkingTool(.pen, color: inkColor, width: 3)
+        return canvas
+    }()
+    
     private var toggleColorsPalletesButton: UIButton = {
         var config = UIButton.Configuration.borderedProminent()
         config.background.strokeColor = .init(white: 0.95, alpha: 1)
         config.background.strokeWidth = 2
-        config.baseBackgroundColor = .systemPink
+        config.baseBackgroundColor = CardColor.colors.first!.background
+        config.cornerStyle = .capsule
+        
+        let button = UIButton(configuration: config)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(systemName: "pencil"), for: .normal)
+        button.imageView?.layer.opacity = 0
+        
+        return button
+    }()
+    
+    private var colorPalletesContainer: UIView = {
+        let colors: [CardColor] = CardColor.colors
+        
+        let frame = CGRect(x: 0, y: 0, width: 50, height: 448)
+        let colorPalletesContainer = UIView(frame: frame)
+        colorPalletesContainer.translatesAutoresizingMaskIntoConstraints = false
+        colorPalletesContainer.isHidden = true
+        
+        for (index, color) in colors.reversed().enumerated() {
+            var config = UIButton.Configuration.borderedProminent()
+            config.background.strokeColor = .init(white: 0.95, alpha: 1)
+            config.background.strokeWidth = color.background == colors[0].background ? 6 : 2
+            config.baseBackgroundColor = color.background
+            config.cornerStyle = .capsule
+            
+            let size = CGSize(width: 50, height: 50)
+            let origin = CGPoint(
+                x: 0,
+                y: 448
+            )
+            
+            let button = UIButton(configuration: config)
+            button.frame = .init(origin: origin, size: size)
+            button.backgroundColor = color.background
+            button.layer.cornerRadius = .infinity
+            
+            colorPalletesContainer.addSubview(button)
+        }
+        
+        return colorPalletesContainer
+    }()
+    
+    private var randomizedCardButton: UIButton = {
+        var config = UIButton.Configuration.filled()
+        config.image = .init(systemName: "dice.fill")?.withTintColor(
+            .textSecondary,
+            renderingMode: .alwaysOriginal
+        )
+        config.baseBackgroundColor = .backgroundSecondary
         config.cornerStyle = .capsule
         
         let button = UIButton(configuration: config)
@@ -92,45 +163,104 @@ class KudosEditorViewController: UIViewController {
         return button
     }()
     
-    private var colorPalletesContainer: UIView = {
-        let colors: [UIColor] = [
-            .white,
-            .orange,
-            .yellow,
-            .green,
-            .systemTeal,
-            .cyan,
-            .systemIndigo,
-            .systemPink,
-        ]
-
-        let frame = CGRect(x: 0, y: 0, width: 44, height: 416)
-        let colorPalletesContainer = UIView(frame: frame)
-        colorPalletesContainer.translatesAutoresizingMaskIntoConstraints = false
-        colorPalletesContainer.isHidden = true
+    private var emojiPicker: UIStackView = {
+        var stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.spacing = 8
         
-        for (index, color) in colors.enumerated() {
-            var config = UIButton.Configuration.borderedProminent()
-            config.background.strokeColor = .init(white: 0.95, alpha: 1)
-            config.background.strokeWidth = color == .systemPink ? 6 : 2
-            config.baseBackgroundColor = color
-            config.cornerStyle = .capsule
+        let imageStrings = Card.emojis.map { "\($0)-compact" }
+
+        for imageString in imageStrings {
+            let image = UIImage(named: imageString)
             
-            let size = CGSize(width: 44, height: 44)
-            let origin = CGPoint(
-                x: 0,
-                y: 416
-            )
+            var config = UIButton.Configuration.filled()
+            config.image = image
+            config.cornerStyle = .medium
+            if imageString == imageStrings.first {
+                config.baseBackgroundColor = .backgroundSecondary
+            } else {
+                config.baseBackgroundColor = .clear
+            }
             
-            let button = UIButton(configuration: config)
-            button.frame = .init(origin: origin, size: size)
-            button.backgroundColor = color
-            button.layer.cornerRadius = .infinity
+            let emojiButton = UIButton(configuration: config)
+            emojiButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+            emojiButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
             
-            colorPalletesContainer.addSubview(button)
+            stack.addArrangedSubview(emojiButton)
         }
         
-        return colorPalletesContainer
+        stack.transform = .init(
+            translationX: 0,
+            y: 100
+        )
+        stack.isHidden = true
+        
+        return stack
+    }()
+    
+    private var titlePicker: UIStackView = {
+        var stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.spacing = 20
+        
+        for title in Card.titles {
+            let button = UIButton()
+            button.setTitle(title, for: .normal)
+            button.titleLabel?.font = UIFont.rounded(ofSize: 12, weight: .bold)
+            button.titleLabel?.lineBreakMode = .byWordWrapping
+            button.titleLabel?.textAlignment = .left
+            button.setTitleColor(.textPrimary, for: .normal)
+            
+            button.heightAnchor.constraint(equalToConstant: 50).isActive = true
+            
+            stack.addArrangedSubview(button)
+        }
+        
+        stack.transform = .init(
+            translationX: 0,
+            y: 100
+        )
+        stack.isHidden = true
+        
+        return stack
+    }()
+    
+    @objc private var activateDrawModeButton: UIButton = {
+        var config = UIButton.Configuration.filled()
+        config.image = .init(systemName: "scribble.variable")?.withTintColor(.textSecondary, renderingMode: .alwaysOriginal)
+        config.cornerStyle = .capsule
+        config.baseBackgroundColor = .backgroundSecondary
+        
+        let button = UIButton(configuration: config)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        return button
+    }()
+    
+    private var cardEmojiButton: UIButton = {
+        let image = UIImage(named: "emoji-star")
+        
+        let imageButton = UIButton()
+        imageButton.translatesAutoresizingMaskIntoConstraints = false
+        imageButton.setImage(image, for: .normal)
+        
+        return imageButton
+    }()
+    
+    private var cardDivider: UIView = {
+        let divider = UIView()
+        divider.translatesAutoresizingMaskIntoConstraints = false
+        return divider
+    }()
+    
+    private var cardTitleButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("You Are\nAwesome!", for: .normal)
+        button.titleLabel?.font = UIFont.rounded(ofSize: 32, weight: .bold)
+        button.titleLabel?.lineBreakMode = .byWordWrapping
+        button.titleLabel?.textAlignment = .left
+        return button
     }()
     
     private var trashView: UIImageView = {
@@ -145,6 +275,22 @@ class KudosEditorViewController: UIViewController {
         trashView.isHidden = true
         
         return trashView
+    }()
+    
+    private var CTAButton: UIButton = {
+        var config = UIButton.Configuration.filled()
+        config.cornerStyle = .capsule
+        config.title = "Share"
+        config.imagePadding = 4
+        config.image = .init(systemName: "paperplane.fill")?
+            .withTintColor(.white, renderingMode: .alwaysOriginal)
+        config.baseBackgroundColor = .label
+        config.baseForegroundColor = .systemBackground
+        
+        let button = UIButton(configuration: config)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        return button
     }()
     
     // MARK: - Methods
@@ -180,32 +326,122 @@ class KudosEditorViewController: UIViewController {
     func setupSubviews() {
         view.addSubview(kudosCard)
         kudosCard.addSubview(trashView)
+        kudosCard.addSubview(canvasView)
+        kudosCard.addSubview(cardEmojiButton)
+        kudosCard.addSubview(cardTitleButton)
+        kudosCard.addSubview(cardDivider)
         view.addSubview(bottomToolbarView)
+        bottomToolbarView.addSubview(randomizedCardButton)
+        bottomToolbarView.addSubview(activateDrawModeButton)
+        bottomToolbarView.addSubview(CTAButton)
+        view.addSubview(emojiPicker)
+        view.addSubview(titlePicker)
         
         bottomToolbarView.addSubview(toggleColorsPalletesButton)
         view.addSubview(colorPalletesContainer)
         
         setupKudosCard()
+        setupTitleOptions()
         setupColorPalletesContainer()
         setupToggleColorsPalletesButton()
+        setupDrawButton()
+        setupDoneDrawingButton()
+        setupCardTitleButton()
+        setupCardEmojiButton()
+        setupEmojiButton()
+        setupRandomizedCardPressed()
         setupConstraints()
     }
     
     func setupKudosCard() {
-        let cardSize = CGSize(
-            width: view.frame.width,
-            height: view.frame.width * 16/9
-        )
-        kudosCard.frame.size = cardSize
-        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapOnCard))
         kudosCard.addGestureRecognizer(tapGesture)
+        
+        updateCard()
+    }
+    
+    func updateCard(updateBackground: Bool = true) {
+        if updateBackground {
+            kudosCard.backgroundColor = currentCard.color.background
+            cardDivider.backgroundColor = currentCard.color.divider
+        }
+        cardTitleButton.setTitleColor(currentCard.color.text, for: .normal)
+        cardTitleButton.setTitle(currentCard.title, for: .normal)
+        cardEmojiButton.setImage(UIImage(named: currentCard.emoji), for: .normal)
+        toggleColorsPalletesButton.configuration?.baseBackgroundColor = currentCard.color.background
+        
+        for case let colorButton as UIButton in colorPalletesContainer.subviews {
+            let isSelected = colorButton.backgroundColor == currentCard.color.background
+            colorButton.configuration?.background.strokeWidth = isSelected ? 6 : 2
+        }
+        
+        for case let emojiButton as UIButton in emojiPicker.arrangedSubviews {
+            if emojiButton.configuration?.image == UIImage(named: "\(currentCard.emoji)-compact") {
+                emojiButton.configuration?.baseBackgroundColor = .backgroundSecondary
+            } else {
+                emojiButton.configuration?.baseBackgroundColor = .clear
+            }
+        }
+        
+        for textView in textViews {
+            textView.textColor = currentCard.color.text
+        }
+    }
+    
+    func setupRandomizedCardPressed() {
+        randomizedCardButton.addTarget(
+            self,
+            action: #selector(randomizedCardPressed),
+            for: .touchUpInside
+        )
     }
     
     func setupToggleColorsPalletesButton() {
         toggleColorsPalletesButton.addTarget(
             self,
             action: #selector(toggleColorsPalettesPressed),
+            for: .touchUpInside
+        )
+    }
+    
+    func setupCardEmojiButton() {
+        cardEmojiButton.addTarget(
+            self,
+            action: #selector(cardEmojiPressed),
+            for: .touchUpInside
+        )
+    }
+    
+    func setupCardTitleButton() {
+        cardTitleButton.addTarget(
+            self,
+            action: #selector(cardTitlePressed),
+            for: .touchUpInside
+        )
+    }
+    
+    func setupEmojiButton() {
+        for case let button as UIButton in emojiPicker.subviews{
+            button.addTarget(
+                self,
+                action: #selector(emojiPressed),
+                for: .touchUpInside
+            )
+        }
+    }
+    
+    func setupDrawButton() {
+        activateDrawModeButton.addTarget(
+            self,
+            action: #selector(activateDrawModePressed),
+            for: .touchUpInside
+        )
+    }
+    
+    func setupDoneDrawingButton() {
+        CTAButton.addTarget(
+            self,
+            action: #selector(CTAButtonPressed),
             for: .touchUpInside
         )
     }
@@ -222,13 +458,97 @@ class KudosEditorViewController: UIViewController {
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
+            cardEmojiButton.topAnchor.constraint(
+                equalTo: kudosCard.topAnchor,
+                constant: 48
+            ),
+            cardEmojiButton.leadingAnchor.constraint(
+                equalTo: kudosCard.leadingAnchor,
+                constant: 32
+            ),
+            cardEmojiButton.widthAnchor.constraint(
+                equalToConstant: 100
+            ),
+            cardEmojiButton.heightAnchor.constraint(
+                equalTo: cardEmojiButton.widthAnchor
+            ),
+            
+            cardTitleButton.leadingAnchor.constraint(
+                equalTo: cardEmojiButton.trailingAnchor,
+                constant: 32
+            ),
+            cardTitleButton.centerYAnchor.constraint(
+                equalTo: cardEmojiButton.centerYAnchor
+            ),
+            cardTitleButton.trailingAnchor.constraint(
+                equalTo: kudosCard.trailingAnchor,
+                constant: -32
+            ),
+            cardTitleButton.heightAnchor.constraint(
+                equalToConstant: 140
+            ),
+            
+            cardDivider.topAnchor.constraint(
+                equalTo: cardEmojiButton.bottomAnchor,
+                constant: 24
+            ),
+            cardDivider.leadingAnchor.constraint(
+                equalTo: cardEmojiButton.leadingAnchor
+            ),
+            cardDivider.trailingAnchor.constraint(
+                equalTo: cardTitleButton.trailingAnchor
+            ),
+            cardDivider.heightAnchor.constraint(equalToConstant: 1.5),
+            
+            emojiPicker.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                constant: -8
+            ),
+            emojiPicker.centerXAnchor.constraint(
+                equalTo: view.centerXAnchor
+            ),
+
+            titlePicker.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                constant: -8
+            ),
+            titlePicker.centerXAnchor.constraint(
+                equalTo: view.centerXAnchor
+            ),
+            
             trashView.heightAnchor.constraint(equalToConstant: 64),
             trashView.widthAnchor.constraint(equalToConstant: 64),
             trashView.bottomAnchor.constraint(equalTo: kudosCard.bottomAnchor, constant: -8),
             trashView.centerXAnchor.constraint(equalTo: kudosCard.centerXAnchor),
             
+            kudosCard.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor
+            ),
+            kudosCard.leadingAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.leadingAnchor,
+                constant: 8
+            ),
+            kudosCard.trailingAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.trailingAnchor,
+                constant: -8
+            ),
+            kudosCard.heightAnchor.constraint(equalTo: kudosCard.widthAnchor, multiplier: 16 / 9),
+            
+            canvasView.topAnchor.constraint(
+                equalTo: kudosCard.topAnchor
+            ),
+            canvasView.leadingAnchor.constraint(
+                equalTo: kudosCard.leadingAnchor
+            ),
+            canvasView.bottomAnchor.constraint(
+                equalTo: kudosCard.bottomAnchor
+            ),
+            canvasView.trailingAnchor.constraint(
+                equalTo: kudosCard.trailingAnchor
+            ),
+            
             bottomToolbarView.heightAnchor.constraint(
-                equalToConstant: 44
+                equalToConstant: 50
             ),
             bottomToolbarView.leadingAnchor.constraint(
                 equalTo: view.leadingAnchor,
@@ -260,15 +580,46 @@ class KudosEditorViewController: UIViewController {
                 equalTo: toggleColorsPalletesButton.centerXAnchor
             ),
             colorPalletesContainer.heightAnchor.constraint(
-                equalToConstant: 400
+                equalToConstant: 448
             ),
             colorPalletesContainer.widthAnchor.constraint(
                 equalTo: toggleColorsPalletesButton.widthAnchor
             ),
             colorPalletesContainer.bottomAnchor.constraint(
                 equalTo: bottomToolbarView.topAnchor,
-                constant: -16
+                constant: -42
             ),
+            
+            randomizedCardButton.topAnchor.constraint(
+                equalTo: bottomToolbarView.topAnchor
+            ),
+            randomizedCardButton.leadingAnchor.constraint(
+                equalTo: toggleColorsPalletesButton.trailingAnchor, constant: 8
+            ),
+            randomizedCardButton.bottomAnchor.constraint(
+                equalTo: bottomToolbarView.bottomAnchor
+            ),
+            randomizedCardButton.widthAnchor.constraint(
+                equalTo: randomizedCardButton.heightAnchor
+            ),
+
+            activateDrawModeButton.topAnchor.constraint(
+                equalTo: bottomToolbarView.topAnchor
+            ),
+            activateDrawModeButton.leadingAnchor.constraint(
+                equalTo: randomizedCardButton.trailingAnchor, constant: 8
+            ),
+            activateDrawModeButton.bottomAnchor.constraint(
+                equalTo: bottomToolbarView.bottomAnchor
+            ),
+            activateDrawModeButton.widthAnchor.constraint(
+                equalTo: randomizedCardButton.heightAnchor
+            ),
+            
+            CTAButton.topAnchor.constraint(equalTo: bottomToolbarView.topAnchor),
+            CTAButton.bottomAnchor.constraint(equalTo: bottomToolbarView.bottomAnchor),
+            CTAButton.trailingAnchor.constraint(equalTo: bottomToolbarView.trailingAnchor),
+            CTAButton.widthAnchor.constraint(equalToConstant: 120)
         ])
     }
     
@@ -280,23 +631,7 @@ extension KudosEditorViewController {
         
     @objc func toggleColorsPalettesPressed(forceHide: Bool = false) {
         
-        if colorPalletesContainer.isHidden && !forceHide {
-            colorPalletesContainer.isHidden.toggle()
-            
-            UIView.animate(
-                withDuration: 0.2,
-                delay: 0,
-                options:  .curveEaseOut
-            ) {
-                for case let (index, button as UIButton) in self.colorPalletesContainer.subviews.enumerated() {
-                    let origin = CGPoint(
-                        x: 0,
-                        y: index * 50
-                    )
-                    button.frame.origin = origin
-                }
-            }
-        } else {
+        if !colorPalletesContainer.isHidden || forceHide {
             UIView.animate(
                 withDuration: 0.2,
                 delay: 0,
@@ -310,7 +645,23 @@ extension KudosEditorViewController {
                     button.frame.origin = origin
                 }
             } completion: { _ in
-                self.colorPalletesContainer.isHidden.toggle()
+                self.colorPalletesContainer.isHidden = true
+            }
+        } else {
+            colorPalletesContainer.isHidden.toggle()
+            
+            UIView.animate(
+                withDuration: 0.2,
+                delay: 0,
+                options:  .curveEaseOut
+            ) {
+                for case let (index, button as UIButton) in self.colorPalletesContainer.subviews.enumerated() {
+                    let origin = CGPoint(
+                        x: 0,
+                        y: index * 56
+                    )
+                    button.frame.origin = origin
+                }
             }
         }
     }
@@ -321,12 +672,257 @@ extension KudosEditorViewController {
             colorButton.configuration?.background.strokeWidth = 2
         }
         
-        if let color = sender.backgroundColor {
+        if let backgroundColor = sender.backgroundColor {
+            let cardColor = CardColor.colors.first(where: { $0.background == backgroundColor} )
+            currentCard.color = cardColor!
             UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) { [self] in
+                if canvasView.isUserInteractionEnabled {
+                    let textColor = currentCard.color.pen
+                    canvasView.tool = PKInkingTool(.pen, color: textColor, width: 2)
+                    updateCard(updateBackground: false)
+                } else {
+                    updateCard()
+                }
                 sender.configuration?.background.strokeWidth = 6
-                kudosCard.backgroundColor = color
-                toggleColorsPalletesButton.configuration?.baseBackgroundColor = color
+                toggleColorsPalletesButton.configuration?.baseBackgroundColor = backgroundColor
+            } completion: { [self] _ in
+                toggleColorsPalettesPressed(forceHide: true)
             }
+        }
+    }
+    
+    @objc func activateDrawModePressed(_ sender: UIButton) {
+        canvasView.tool = PKInkingTool(.pen, color: currentCard.color.pen, width: 3)
+        UIView.animateKeyframes(withDuration: 0.25, delay: 0) {
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1/2) { [self] in
+                toggleColorsPalletesButton.configuration?.image = UIImage(systemName: "pencil")
+                randomizedCardButton.layer.opacity = 0
+                activateDrawModeButton.layer.opacity = 0
+            }
+            UIView.addKeyframe(withRelativeStartTime: 1/2, relativeDuration: 1/2) { [self] in
+                toggleColorsPalletesButton.imageView?.layer.opacity = 1
+                CTAButton.configuration?.title = "Done"
+                CTAButton.configuration?.image = nil
+                CTAButton.configuration?.baseBackgroundColor = .backgroundSecondary
+                CTAButton.configuration?.baseForegroundColor = .textSecondary
+            }
+        } completion: { [self] _ in
+            randomizedCardButton.isHidden = true
+            activateDrawModeButton.isHidden = true
+            canvasView.isUserInteractionEnabled = true
+        }
+        
+    }
+    
+    @objc func CTAButtonPressed(_ sender: UIButton) {
+        if sender.configuration?.title == "Done" {
+            doneDrawing()
+        } else {
+            shareImagePressed()
+        }
+    }
+    
+    @objc func cardEmojiPressed(_ sender: UIButton) {
+        if emojiPicker.isHidden {
+            showEmojiPicker()
+        } else {
+            hideEmojiPicker()
+        }
+    }
+    
+    @objc func shareImagePressed() {
+        let image = RenderImage.renderImage(in: kudosCard)
+        
+        // image is an UIImage
+        // Put the logic for uploading the image here
+        
+    }
+    
+    @objc private func randomizedCardPressed(_ sender: UIButton) {
+        currentCard = Card.random()
+        updateCard()
+    }
+    
+    @objc func emojiPressed(_ sender: UIButton) {
+        if let selectedImage = sender.imageView?.image {
+            for case let imageButton as UIButton in emojiPicker.subviews {
+                if selectedImage.isEqualToImage(imageButton.imageView!.image!) {
+                    imageButton.configuration?.baseBackgroundColor = .backgroundSecondary
+                } else {
+                    imageButton.configuration?.baseBackgroundColor = .clear
+                }
+            }
+            
+            if let imageString = selectedImage.assetName {
+                let imageStringNoCompact = imageString.dropLast(8)
+                let image = UIImage(named: String(imageStringNoCompact))
+                cardEmojiButton.setImage(image, for: .normal)
+                currentCard.emoji = String(imageStringNoCompact)
+                hideEmojiPicker()
+            }
+        }
+    }
+    
+    private func setupTitleOptions() {
+        for case let button as UIButton in titlePicker.arrangedSubviews {
+            button.addTarget(
+                self,
+                action: #selector(titleOptionPressed),
+                for: .touchUpInside
+            )
+        }
+    }
+    
+    private func showEmojiPicker() {
+        emojiPicker.isHidden = false
+        UIView.animateKeyframes(
+            withDuration: 0.25,
+            delay: 0
+        ) {
+            UIView.addKeyframe(
+                withRelativeStartTime: 0,
+                relativeDuration: 1/2
+            ) { [self] in
+                bottomToolbarView.transform = .init(
+                    translationX: 0,
+                    y: 100
+                )
+            }
+            UIView.addKeyframe(
+                withRelativeStartTime: 1/2,
+                relativeDuration: 1/2
+            ) { [self] in
+                emojiPicker.transform = .identity
+            }
+        } completion: { _ in
+            self.bottomToolbarView.isHidden = true
+        }
+    }
+
+    private func hideEmojiPicker() {
+        bottomToolbarView.isHidden = false
+        UIView.animateKeyframes(
+            withDuration: 0.25,
+            delay: 0
+        ) {
+            UIView.addKeyframe(
+                withRelativeStartTime: 0,
+                relativeDuration: 1/2
+            ) { [self] in
+                emojiPicker.transform = .init(
+                    translationX: 0,
+                    y: 100
+                )
+            }
+            UIView.addKeyframe(
+                withRelativeStartTime: 1/2,
+                relativeDuration: 1/2
+            ) { [self] in
+                bottomToolbarView.transform = .identity
+            }
+        } completion: { _ in
+            self.emojiPicker.isHidden = true
+        }
+    }
+    
+    func doneDrawing() {
+        randomizedCardButton.isHidden = false
+        activateDrawModeButton.isHidden = false
+        
+        UIView.animateKeyframes(withDuration: 0.25, delay: 0) {
+            UIView.addKeyframe(
+                withRelativeStartTime: 0,
+                relativeDuration: 1
+            ) { [self] in
+                CTAButton.configuration?.baseBackgroundColor = .textPrimary
+                CTAButton.configuration?.baseForegroundColor = .white
+            }
+            UIView.addKeyframe(withRelativeStartTime: 1/2, relativeDuration: 1/2) { [self] in
+                randomizedCardButton.layer.opacity = 1
+                activateDrawModeButton.layer.opacity = 1
+                toggleColorsPalletesButton.imageView?.layer.opacity = 0
+                CTAButton.configuration?.title = "Share"
+                CTAButton.configuration?.image = UIImage(systemName: "paperplane.fill")?.withTintColor(.white, renderingMode: .alwaysOriginal)
+                CTAButton.configuration?.baseBackgroundColor = .textPrimary
+                CTAButton.configuration?.baseForegroundColor = .white
+                
+                let cardColor = CardColor.colors.first {
+                    $0.background == kudosCard.backgroundColor
+                }
+                currentCard.color = cardColor!
+                
+                updateCard(updateBackground: false)
+            }
+        } completion: { [self] _ in
+            canvasView.isUserInteractionEnabled = false
+        }
+    }
+    
+    @objc func cardTitlePressed(_ sender: UIButton) {
+        if titlePicker.isHidden {
+            showTitlePicker()
+        } else {
+            hideTitlePicker()
+        }
+    }
+    
+    @objc func titleOptionPressed(_ sender: UIButton) {
+        if let title = sender.title(for: .normal) {
+            currentCard.title = title
+            cardTitleButton.setTitle(title, for: .normal)
+            hideTitlePicker()
+        }
+    }
+    
+    func showTitlePicker() {
+        titlePicker.isHidden = false
+        UIView.animateKeyframes(
+            withDuration: 0.25,
+            delay: 0
+        ) {
+            UIView.addKeyframe(
+                withRelativeStartTime: 0,
+                relativeDuration: 1/2
+            ) { [self] in
+                bottomToolbarView.transform = .init(
+                    translationX: 0,
+                    y: 100
+                )
+            }
+            UIView.addKeyframe(
+                withRelativeStartTime: 1/2,
+                relativeDuration: 1/2
+            ) { [self] in
+                titlePicker.transform = .identity
+            }
+        } completion: { _ in
+            self.bottomToolbarView.isHidden = true
+        }
+    }
+    
+    func hideTitlePicker() {
+        bottomToolbarView.isHidden = false
+        UIView.animateKeyframes(
+            withDuration: 0.25,
+            delay: 0
+        ) {
+            UIView.addKeyframe(
+                withRelativeStartTime: 0,
+                relativeDuration: 1/2
+            ) { [self] in
+                titlePicker.transform = .init(
+                    translationX: 0,
+                    y: 100
+                )
+            }
+            UIView.addKeyframe(
+                withRelativeStartTime: 1/2,
+                relativeDuration: 1/2
+            ) { [self] in
+                bottomToolbarView.transform = .identity
+            }
+        } completion: { _ in
+            self.titlePicker.isHidden = true
         }
     }
     
@@ -417,7 +1013,7 @@ extension KudosEditorViewController: UITextViewDelegate {
         
         let newTextView = UITextView(frame: .zero)
         newTextView.isScrollEnabled = false
-        newTextView.textColor = .black
+        newTextView.textColor = currentCard.color.text
         newTextView.font = .systemFont(ofSize: 24)
         newTextView.center = location
         newTextView.backgroundColor = .none
@@ -442,6 +1038,7 @@ extension KudosEditorViewController: UITextViewDelegate {
         newTextView.isUserInteractionEnabled = true
 
         kudosCard.addSubview(newTextView)
+        textViews.append(newTextView)
         
         newTextView.becomeFirstResponder()
     }
@@ -458,7 +1055,7 @@ extension KudosEditorViewController: UITextViewDelegate {
             delay: 0,
             options: UIView.AnimationOptions(rawValue: UInt(keyboardAnimationCurve ?? 0))
         ) {
-            textView.center = .init(x: (self.view.window?.windowScene?.screen.bounds.width ?? 200)/2, y: 200)
+            textView.center = .init(x: (self.view.window?.windowScene?.screen.bounds.width ?? 200)/2, y: 300)
         }
         
         return true
@@ -502,6 +1099,7 @@ extension KudosEditorViewController: UITextViewDelegate {
         UIView.animate(withDuration: 0.15) {
             view.alpha = 0
         } completion: { _ in
+            self.textViews.removeAll(where: {$0 == view})
             view.removeFromSuperview()
         }
     }
@@ -547,4 +1145,5 @@ extension KudosEditorViewController {
         keyboardAnimationDuration = duration
         keyboardAnimationCurve = animationCurve
     }
+    
 }
