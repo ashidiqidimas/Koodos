@@ -20,6 +20,8 @@
 		135FAD6C29CD720E000368CB /* UIImage+isEqualToImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6B29CD720E000368CB /* UIImage+isEqualToImage.swift */; };
 		135FAD6E29CD7643000368CB /* UIImage+assetName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6D29CD7643000368CB /* UIImage+assetName.swift */; };
 		135FAD7029CD9203000368CB /* RenderImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6F29CD9203000368CB /* RenderImage.swift */; };
+		1399ADA129CF12630060D76C /* ARViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1399ADA029CF12630060D76C /* ARViewContainer.swift */; };
+		1399ADA329CF129C0060D76C /* MaterialContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1399ADA229CF129C0060D76C /* MaterialContainerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +39,8 @@
 		135FAD6B29CD720E000368CB /* UIImage+isEqualToImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+isEqualToImage.swift"; sourceTree = "<group>"; };
 		135FAD6D29CD7643000368CB /* UIImage+assetName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+assetName.swift"; sourceTree = "<group>"; };
 		135FAD6F29CD9203000368CB /* RenderImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderImage.swift; sourceTree = "<group>"; };
+		1399ADA029CF12630060D76C /* ARViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewContainer.swift; sourceTree = "<group>"; };
+		1399ADA229CF129C0060D76C /* MaterialContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaterialContainerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +75,8 @@
 			children = (
 				1351697029C8A16800170969 /* KoodosApp.swift */,
 				1351697229C8A16800170969 /* ContentView.swift */,
+				1399ADA029CF12630060D76C /* ARViewContainer.swift */,
+				1399ADA229CF129C0060D76C /* MaterialContainerView.swift */,
 				1351698029C8A34B00170969 /* KudosEditor */,
 				135FAD6229CC1A1C000368CB /* Models */,
 				135FAD3F29C973CC000368CB /* Helpers */,
@@ -193,7 +199,9 @@
 				1351697F29C8A32B00170969 /* KudosCardEditorScreen.swift in Sources */,
 				135FAD6629CC2D77000368CB /* UIColor+Colors.swift in Sources */,
 				1351697329C8A16800170969 /* ContentView.swift in Sources */,
+				1399ADA129CF12630060D76C /* ARViewContainer.swift in Sources */,
 				135FAD6C29CD720E000368CB /* UIImage+isEqualToImage.swift in Sources */,
+				1399ADA329CF129C0060D76C /* MaterialContainerView.swift in Sources */,
 				135FAD6429CC1A34000368CB /* CardColor.swift in Sources */,
 				135FAD4129C973F3000368CB /* CGAffineTransform+scale.swift in Sources */,
 				135FAD6E29CD7643000368CB /* UIImage+assetName.swift in Sources */,

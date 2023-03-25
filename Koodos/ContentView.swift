@@ -9,7 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        KudosEditorScreen()
+        KudosEditorScreen() // put the logic for uploading the photo on line 738
+        
+//        ARViewContainer(cards: <#T##[Image]#>) // pass the images to be displayed on the board here
     }
 }
 

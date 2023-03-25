@@ -732,7 +732,10 @@ extension KudosEditorViewController {
     
     @objc func shareImagePressed() {
         let image = RenderImage.renderImage(in: kudosCard)
-        print(image.pngData()?.count) // TODO: Delete
+        
+        // image is an UIImage
+        // Put the logic for uploading the image here
+        
     }
     
     @objc private func randomizedCardPressed(_ sender: UIButton) {
@@ -1052,7 +1055,7 @@ extension KudosEditorViewController: UITextViewDelegate {
             delay: 0,
             options: UIView.AnimationOptions(rawValue: UInt(keyboardAnimationCurve ?? 0))
         ) {
-            textView.center = .init(x: (self.view.window?.windowScene?.screen.bounds.width ?? 200)/2, y: 200)
+            textView.center = .init(x: (self.view.window?.windowScene?.screen.bounds.width ?? 200)/2, y: 300)
         }
         
         return true
