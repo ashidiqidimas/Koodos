@@ -25,10 +25,10 @@ struct KoodosApp: App {
     var body: some Scene {
         WindowGroup {
             //Sample Using viewModel
-            ImageListView(viewModel: KoodosViewModel())
+//            ImageListView(viewModel: KoodosViewModel())
 
             //Original View
-//            ContentView()
+            ContentView()
         }
     }
 }

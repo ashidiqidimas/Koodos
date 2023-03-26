@@ -15,10 +15,12 @@ import SwiftUI
 //
 
 import SwiftUI
+import Kingfisher
 
 /// The view that will be rendered on the board
 struct MaterialContainerView: View {
-    let cards: [Image]
+//    let cards: [Image]
+    let cards: [ImageFirebase]
     
     let columns = [
         GridItem(.adaptive(minimum: 240))
@@ -30,11 +32,20 @@ struct MaterialContainerView: View {
 
             LazyVGrid(columns: columns, spacing: 8) {
                 ForEach(0..<cards.count) { index in
-                    cards[index]
-                        .resizable()
+                    
+//                    cards[index]
+//                        .resizable()
+//                        .position(x: 0, y: 0)
+//                        .frame(width: 240, height: 240 * 16 / 9)
+//                        .aspectRatio(contentMode: .fit)
+                    
+                    KFImage(URL(string: cards[index].imageUrl ?? ""))
+                        .setProcessor(RoundCornerImageProcessor(cornerRadius: 8))
+                        .resizable().scaledToFit()
                         .position(x: 0, y: 0)
                         .frame(width: 240, height: 240 * 16 / 9)
                         .aspectRatio(contentMode: .fit)
+                    
                 }
             }
             .padding(240)

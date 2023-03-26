@@ -8,11 +8,13 @@
 import SwiftUI
 import RealityKit
 
+
 struct ARViewContainer: UIViewRepresentable {
     
     /// Kudos images that will be rendered
-    let cards: [Image]
-    
+    let cards: [ImageFirebase]
+//    let cards: [Image]
+
     func makeUIView(context: Context) -> ARView {
         
         let arView = ARView(frame: .zero)

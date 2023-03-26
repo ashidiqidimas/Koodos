@@ -10,9 +10,12 @@ import UIKit
 import PencilKit
 
 struct KudosEditorScreen: View {
+    
+    @ObservedObject var viewModel: KoodosViewModel
+
     var body: some View {
         GeometryReader { geo in
-            KudosEditorControllerRepresentable()
+            KudosEditorControllerRepresentable(viewModel: viewModel)
                 .preferredColorScheme(.light)
                 .ignoresSafeArea(.keyboard, edges: .bottom)
         }
@@ -20,9 +23,13 @@ struct KudosEditorScreen: View {
 }
 
 struct KudosEditorControllerRepresentable: UIViewControllerRepresentable {
-    
+    @ObservedObject var viewModel: KoodosViewModel
+
     func makeUIViewController(context: Context) -> some UIViewController {
-        KudosEditorViewController()
+//        KudosEditorViewController()
+        let kudosEditorViewController = KudosEditorViewController()
+        kudosEditorViewController.viewModel = viewModel
+        return kudosEditorViewController
     }
     
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
@@ -31,7 +38,7 @@ struct KudosEditorControllerRepresentable: UIViewControllerRepresentable {
 
 struct KudosEditorScreen_Previews: PreviewProvider {
     static var previews: some View {
-        KudosEditorScreen()
+        KudosEditorScreen(viewModel: KoodosViewModel())
     }
 }
 
@@ -39,6 +46,8 @@ struct KudosEditorScreen_Previews: PreviewProvider {
 
 class KudosEditorViewController: UIViewController {
     
+    var viewModel: KoodosViewModel? = nil
+
     // MARK: - Properties
     
     private var textViews: [UITextView] = []
@@ -297,7 +306,7 @@ class KudosEditorViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setupSubviews()
     }
     
@@ -735,7 +744,7 @@ extension KudosEditorViewController {
         
         // image is an UIImage
         // Put the logic for uploading the image here
-        
+        self.viewModel?.upload(image: image)
     }
     
     @objc private func randomizedCardPressed(_ sender: UIButton) {

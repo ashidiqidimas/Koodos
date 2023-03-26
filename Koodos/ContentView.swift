@@ -9,8 +9,11 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        KudosEditorScreen() // put the logic for uploading the photo on line 738
+//        KudosEditorScreen(viewModel: KoodosViewModel()) // put the logic for uploading the photo on line 738
+        ImageListView(viewModel: KoodosViewModel())
         
+//        ARViewContainer(viewModel: KoodosViewModel()) // pass the images to be displayed on the board here
+
 //        ARViewContainer(cards: <#T##[Image]#>) // pass the images to be displayed on the board here
     }
 }

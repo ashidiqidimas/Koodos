@@ -27,7 +27,7 @@ class KoodosViewModel: ObservableObject  {
 
 
         // Convert the image into JPEG and compress the quality to reduce its size
-        let data = image.jpegData(compressionQuality: 0.5)
+        let data = image.jpegData(compressionQuality: 0.9)
 
         // Change the content type to jpg. If you don't, it'll be saved as application/octet-stream type
         let metadata = StorageMetadata()
