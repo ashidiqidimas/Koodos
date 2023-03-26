@@ -12,8 +12,8 @@ import RealityKit
 struct ARViewContainer: UIViewRepresentable {
     
     /// Kudos images that will be rendered
-    let cards: [ImageFirebase]
-//    let cards: [Image]
+//    let cards: [ImageFirebase]
+    let cards: [Image]
 
     func makeUIView(context: Context) -> ARView {
         
@@ -40,7 +40,7 @@ struct ARViewContainer: UIViewRepresentable {
         
         let floorAnchor = AnchorEntity(plane: .horizontal,
                                        classification: .floor,
-                                       minimumBounds: [1.1, 1.1])
+                                       minimumBounds: [0.9, 0.9])
         
         arView.scene.addAnchor(floorAnchor)
         
@@ -52,6 +52,8 @@ struct ARViewContainer: UIViewRepresentable {
         
     }
     
-    func updateUIView(_ uiView: ARView, context: Context) {}
+    func updateUIView(_ uiView: ARView, context: Context) {
+        
+    }
     
 }

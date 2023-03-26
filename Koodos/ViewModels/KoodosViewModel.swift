@@ -11,11 +11,15 @@ import Foundation
 import Firebase
 import FirebaseStorage
 import FirebaseFirestoreSwift
+import Kingfisher
+import URLImage
+import URLImageStore
 
 class KoodosViewModel: ObservableObject  {
     
     let storage = Storage.storage() // Define Storage Firestore
     @Published var imageFirebases = [ImageFirebase]() // Reference to our Model
+    @Published var imageForAR = [Image]() // Reference to our Model
     @Published var isFetch: Bool = false // check if fetch in progress
     private var databaseReference = Firestore.firestore().collection("ImagesFirebase") // reference to our Firestore's collection
 
@@ -58,7 +62,9 @@ class KoodosViewModel: ObservableObject  {
     
         //fetch data
     func fetchDataImagesFireStore() {
+        imageForAR = []
         databaseReference.order(by: "createdTime", descending: true).addSnapshotListener { (querySnapshot, error) in
+          
             guard let documents = querySnapshot?.documents else {
                 print("No documents")
                 return
@@ -68,8 +74,25 @@ class KoodosViewModel: ObservableObject  {
                 
                 return try? queryDocumentSnapshot.data(as: ImageFirebase.self)
             }
-        }
+            
+            for img in self.imageFirebases {
+               
+                if let url = URL(string: img.imageUrl ?? "") {
+                  URLSession.shared.dataTask(with: url) { (data, response, error) in
+                    // Error handling...
+                    guard let imageData = data else { return }
 
+                    DispatchQueue.main.async {
+                        self.imageForAR.append(Image(uiImage: UIImage(data: imageData) ?? UIImage()))
+                    }
+                  }.resume()
+                }
+            }
+              
+            
+            
+        }
+        
     }
 
         // You can use the listItem() function above to get the StorageReference of the item you want to delete

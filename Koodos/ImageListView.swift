@@ -30,6 +30,7 @@ struct ImageListView: View {
                             KFImage(URL(string: item.imageUrl ?? ""))
                                 .setProcessor(RoundCornerImageProcessor(cornerRadius: 8))
                                 .resizable().scaledToFit()
+                              
                         }
                         
                         .cornerRadius(8)
@@ -52,7 +53,7 @@ struct ImageListView: View {
                 }else{
                     VStack(alignment: .trailing) {
                         
-                        NavigationLink(destination: ARContentView(cards: viewModel.imageFirebases),isActive: $isDetailAR, label: {
+                        NavigationLink(destination: ARContentView(cards: viewModel.imageForAR),isActive: $isDetailAR, label: {
                             Button(action: {
                                 // open AR View
                                 
