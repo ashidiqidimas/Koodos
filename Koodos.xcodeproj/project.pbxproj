@@ -22,6 +22,21 @@
 		135FAD7029CD9203000368CB /* RenderImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FAD6F29CD9203000368CB /* RenderImage.swift */; };
 		1399ADA129CF12630060D76C /* ARViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1399ADA029CF12630060D76C /* ARViewContainer.swift */; };
 		1399ADA329CF129C0060D76C /* MaterialContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1399ADA229CF129C0060D76C /* MaterialContainerView.swift */; };
+		85AB522D29CFA3D800FD7BAA /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 85AB522C29CFA3D800FD7BAA /* Kingfisher */; };
+		85AB523029CFA55A00FD7BAA /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 85AB522F29CFA55A00FD7BAA /* FirebaseDatabase */; };
+		85AB523229CFA55A00FD7BAA /* FirebaseDatabaseSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 85AB523129CFA55A00FD7BAA /* FirebaseDatabaseSwift */; };
+		85AB523429CFA55A00FD7BAA /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 85AB523329CFA55A00FD7BAA /* FirebaseFirestore */; };
+		85AB523629CFA55A00FD7BAA /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 85AB523529CFA55A00FD7BAA /* FirebaseFirestoreSwift */; };
+		85AB523829CFA55A00FD7BAA /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 85AB523729CFA55A00FD7BAA /* FirebaseMessaging */; };
+		85AB523A29CFA55A00FD7BAA /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 85AB523929CFA55A00FD7BAA /* FirebaseStorage */; };
+		85AB523C29CFA60800FD7BAA /* ImageFirebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85AB523B29CFA60800FD7BAA /* ImageFirebase.swift */; };
+		85AB524129CFA63100FD7BAA /* KoodosViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85AB524029CFA63100FD7BAA /* KoodosViewModel.swift */; };
+		85AB524329CFA64200FD7BAA /* ImageListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85AB524229CFA64200FD7BAA /* ImageListView.swift */; };
+		85AB524529CFA66700FD7BAA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 85AB524429CFA66700FD7BAA /* GoogleService-Info.plist */; };
+		85AB524729D0289500FD7BAA /* whiteboard.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 85AB524629D0289500FD7BAA /* whiteboard.usdz */; };
+		85AB524929D030D900FD7BAA /* ARContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85AB524829D030D900FD7BAA /* ARContentView.swift */; };
+		85AB524E29D0528D00FD7BAA /* URLImage in Frameworks */ = {isa = PBXBuildFile; productRef = 85AB524D29D0528D00FD7BAA /* URLImage */; };
+		85AB525029D0528D00FD7BAA /* URLImageStore in Frameworks */ = {isa = PBXBuildFile; productRef = 85AB524F29D0528D00FD7BAA /* URLImageStore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +56,12 @@
 		135FAD6F29CD9203000368CB /* RenderImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderImage.swift; sourceTree = "<group>"; };
 		1399ADA029CF12630060D76C /* ARViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewContainer.swift; sourceTree = "<group>"; };
 		1399ADA229CF129C0060D76C /* MaterialContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaterialContainerView.swift; sourceTree = "<group>"; };
+		85AB523B29CFA60800FD7BAA /* ImageFirebase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageFirebase.swift; sourceTree = "<group>"; };
+		85AB524029CFA63100FD7BAA /* KoodosViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KoodosViewModel.swift; sourceTree = "<group>"; };
+		85AB524229CFA64200FD7BAA /* ImageListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageListView.swift; sourceTree = "<group>"; };
+		85AB524429CFA66700FD7BAA /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		85AB524629D0289500FD7BAA /* whiteboard.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = whiteboard.usdz; sourceTree = "<group>"; };
+		85AB524829D030D900FD7BAA /* ARContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,6 +69,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85AB523829CFA55A00FD7BAA /* FirebaseMessaging in Frameworks */,
+				85AB523629CFA55A00FD7BAA /* FirebaseFirestoreSwift in Frameworks */,
+				85AB523229CFA55A00FD7BAA /* FirebaseDatabaseSwift in Frameworks */,
+				85AB523429CFA55A00FD7BAA /* FirebaseFirestore in Frameworks */,
+				85AB525029D0528D00FD7BAA /* URLImageStore in Frameworks */,
+				85AB523A29CFA55A00FD7BAA /* FirebaseStorage in Frameworks */,
+				85AB523029CFA55A00FD7BAA /* FirebaseDatabase in Frameworks */,
+				85AB524E29D0528D00FD7BAA /* URLImage in Frameworks */,
+				85AB522D29CFA3D800FD7BAA /* Kingfisher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,8 +105,13 @@
 			children = (
 				1351697029C8A16800170969 /* KoodosApp.swift */,
 				1351697229C8A16800170969 /* ContentView.swift */,
+				85AB524829D030D900FD7BAA /* ARContentView.swift */,
 				1399ADA029CF12630060D76C /* ARViewContainer.swift */,
 				1399ADA229CF129C0060D76C /* MaterialContainerView.swift */,
+				85AB524229CFA64200FD7BAA /* ImageListView.swift */,
+				85AB524629D0289500FD7BAA /* whiteboard.usdz */,
+				85AB524429CFA66700FD7BAA /* GoogleService-Info.plist */,
+				85AB523F29CFA63100FD7BAA /* ViewModels */,
 				1351698029C8A34B00170969 /* KudosEditor */,
 				135FAD6229CC1A1C000368CB /* Models */,
 				135FAD3F29C973CC000368CB /* Helpers */,
@@ -118,10 +153,19 @@
 		135FAD6229CC1A1C000368CB /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				85AB523B29CFA60800FD7BAA /* ImageFirebase.swift */,
 				135FAD6329CC1A34000368CB /* CardColor.swift */,
 				135FAD6929CC9396000368CB /* Card.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		85AB523F29CFA63100FD7BAA /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				85AB524029CFA63100FD7BAA /* KoodosViewModel.swift */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -140,6 +184,17 @@
 			dependencies = (
 			);
 			name = Koodos;
+			packageProductDependencies = (
+				85AB522C29CFA3D800FD7BAA /* Kingfisher */,
+				85AB522F29CFA55A00FD7BAA /* FirebaseDatabase */,
+				85AB523129CFA55A00FD7BAA /* FirebaseDatabaseSwift */,
+				85AB523329CFA55A00FD7BAA /* FirebaseFirestore */,
+				85AB523529CFA55A00FD7BAA /* FirebaseFirestoreSwift */,
+				85AB523729CFA55A00FD7BAA /* FirebaseMessaging */,
+				85AB523929CFA55A00FD7BAA /* FirebaseStorage */,
+				85AB524D29D0528D00FD7BAA /* URLImage */,
+				85AB524F29D0528D00FD7BAA /* URLImageStore */,
+			);
 			productName = Koodos;
 			productReference = 1351696D29C8A16800170969 /* Koodos.app */;
 			productType = "com.apple.product-type.application";
@@ -168,6 +223,11 @@
 				Base,
 			);
 			mainGroup = 1351696429C8A16800170969;
+			packageReferences = (
+				85AB522B29CFA3D800FD7BAA /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				85AB522E29CFA55A00FD7BAA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				85AB524C29D0528D00FD7BAA /* XCRemoteSwiftPackageReference "url-image" */,
+			);
 			productRefGroup = 1351696E29C8A16800170969 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -182,8 +242,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85AB524729D0289500FD7BAA /* whiteboard.usdz in Resources */,
 				1351697829C8A16900170969 /* Preview Assets.xcassets in Resources */,
 				1351697529C8A16900170969 /* Assets.xcassets in Resources */,
+				85AB524529CFA66700FD7BAA /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -194,12 +256,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85AB524929D030D900FD7BAA /* ARContentView.swift in Sources */,
 				135FAD7029CD9203000368CB /* RenderImage.swift in Sources */,
 				135FAD6829CC5B6A000368CB /* UIFont+rounded.swift in Sources */,
 				1351697F29C8A32B00170969 /* KudosCardEditorScreen.swift in Sources */,
+				85AB524129CFA63100FD7BAA /* KoodosViewModel.swift in Sources */,
 				135FAD6629CC2D77000368CB /* UIColor+Colors.swift in Sources */,
+				85AB523C29CFA60800FD7BAA /* ImageFirebase.swift in Sources */,
 				1351697329C8A16800170969 /* ContentView.swift in Sources */,
 				1399ADA129CF12630060D76C /* ARViewContainer.swift in Sources */,
+				85AB524329CFA64200FD7BAA /* ImageListView.swift in Sources */,
 				135FAD6C29CD720E000368CB /* UIImage+isEqualToImage.swift in Sources */,
 				1399ADA329CF129C0060D76C /* MaterialContainerView.swift in Sources */,
 				135FAD6429CC1A34000368CB /* CardColor.swift in Sources */,
@@ -263,7 +329,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -317,7 +383,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -335,9 +401,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Koodos/Preview Content\"";
-				DEVELOPMENT_TEAM = H9PJ7U2A6K;
+				DEVELOPMENT_TEAM = VZ4YRNP8JB;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Need Camera Permission to open ARKit View.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -364,9 +431,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Koodos/Preview Content\"";
-				DEVELOPMENT_TEAM = H9PJ7U2A6K;
+				DEVELOPMENT_TEAM = VZ4YRNP8JB;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Need Camera Permission to open ARKit View.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -407,6 +475,81 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		85AB522B29CFA3D800FD7BAA /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		85AB522E29CFA55A00FD7BAA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		85AB524C29D0528D00FD7BAA /* XCRemoteSwiftPackageReference "url-image" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/dmytro-anokhin/url-image";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		85AB522C29CFA3D800FD7BAA /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 85AB522B29CFA3D800FD7BAA /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+		85AB522F29CFA55A00FD7BAA /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 85AB522E29CFA55A00FD7BAA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		85AB523129CFA55A00FD7BAA /* FirebaseDatabaseSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 85AB522E29CFA55A00FD7BAA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabaseSwift;
+		};
+		85AB523329CFA55A00FD7BAA /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 85AB522E29CFA55A00FD7BAA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		85AB523529CFA55A00FD7BAA /* FirebaseFirestoreSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 85AB522E29CFA55A00FD7BAA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestoreSwift;
+		};
+		85AB523729CFA55A00FD7BAA /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 85AB522E29CFA55A00FD7BAA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		85AB523929CFA55A00FD7BAA /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 85AB522E29CFA55A00FD7BAA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+		85AB524D29D0528D00FD7BAA /* URLImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 85AB524C29D0528D00FD7BAA /* XCRemoteSwiftPackageReference "url-image" */;
+			productName = URLImage;
+		};
+		85AB524F29D0528D00FD7BAA /* URLImageStore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 85AB524C29D0528D00FD7BAA /* XCRemoteSwiftPackageReference "url-image" */;
+			productName = URLImageStore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1351696529C8A16800170969 /* Project object */;
 }

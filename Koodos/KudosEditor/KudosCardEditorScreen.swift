@@ -12,12 +12,34 @@ import PencilKit
 struct KudosEditorScreen: View {
     
     @ObservedObject var viewModel: KoodosViewModel
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         GeometryReader { geo in
-            KudosEditorControllerRepresentable(viewModel: viewModel)
+            ZStack {
+                KudosEditorControllerRepresentable(
+                    viewModel: viewModel
+                )
                 .preferredColorScheme(.light)
                 .ignoresSafeArea(.keyboard, edges: .bottom)
+                .toolbar(.hidden, for: .navigationBar)
+                
+                Button {
+                    dismiss.callAsFunction()
+                } label: {
+                    HStack(spacing: 8) {
+                        Text("Cancel")
+                    }
+                    .padding(
+                        EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12)
+                    )
+                    .background(.white)
+                    .foregroundColor(.black)
+                    .cornerRadius(12)
+                }
+                .position(x: geo.size.width - 54, y: 26)
+                .ignoresSafeArea(.keyboard)
+            }
         }
     }
 }
@@ -50,7 +72,15 @@ class KudosEditorViewController: UIViewController {
 
     // MARK: - Properties
     
-    private var textViews: [UITextView] = []
+    private var textViews: [UITextView] = [] {
+        didSet {
+            if textViews.isEmpty {
+                hintText.isHidden = true
+            } else {
+                hintText.isHidden = false
+            }
+        }
+    }
     
     /// Used to store the old location of an UILabel before become the first responder
     /// so we can animate it back to its original position when we has finished editing.
@@ -77,6 +107,15 @@ class KudosEditorViewController: UIViewController {
     //    private var drawingPoints: [Int: [CGFloat]] = [:]
     
     // MARK: Views
+    
+    private var hintText: UILabel = {
+        let hintText = UILabel()
+        hintText.text = "Tap to add your message"
+        hintText.translatesAutoresizingMaskIntoConstraints = false
+        hintText.font = .systemFont(ofSize: 20)
+        
+        return hintText
+    }()
     
     private var kudosCard: UIView = {
         let kudosCard = UIView(frame: .zero)
@@ -345,6 +384,7 @@ class KudosEditorViewController: UIViewController {
         bottomToolbarView.addSubview(CTAButton)
         view.addSubview(emojiPicker)
         view.addSubview(titlePicker)
+        view.addSubview(hintText)
         
         bottomToolbarView.addSubview(toggleColorsPalletesButton)
         view.addSubview(colorPalletesContainer)
@@ -467,6 +507,9 @@ class KudosEditorViewController: UIViewController {
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
+            hintText.centerXAnchor.constraint(equalTo: kudosCard.centerXAnchor),
+            hintText.centerYAnchor.constraint(equalTo: kudosCard.centerYAnchor),
+            
             cardEmojiButton.topAnchor.constraint(
                 equalTo: kudosCard.topAnchor,
                 constant: 48
@@ -1055,6 +1098,7 @@ extension KudosEditorViewController: UITextViewDelegate {
     // Move a textView to the top when is the first responder
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         triggerHaptic()
+        hintText.isHidden = true
         
         oldScale = textView.transform.scale
         oldLocation = textView.center
